@@ -1,0 +1,40 @@
+SilverStripe\SiteConfig\SiteConfig:
+  default:
+    Title: "Test SiteConfig"
+SilverCommerce\Discounts\Model\Discount:
+  10-percent:
+    Title: "10% Discount"
+    Type: "Percentage"
+    Code: "10percent"
+    Amount: 10
+    MinOrder: 0
+    Starts: "2018-02-01"
+    Expires: "2018-07-01"
+    Site: =>SilverStripe\SiteConfig\SiteConfig.default
+  20-pound:
+    Title: "£20 Discount"
+    Type: "Fixed"
+    Code: "20pound"
+    Amount: 20
+    MinOrder: 0
+    Starts: "2018-02-01"
+    Expires: "2018-07-01"
+    Site: =>SilverStripe\SiteConfig\SiteConfig.default
+  10-pound-min-order:
+    Title: "£10 Discount"
+    Type: "Fixed"
+    Code: "10pound"
+    Amount: 10
+    MinOrder: 20
+    Starts: "2018-02-01"
+    Expires: "2018-07-01"
+    Site: =>SilverStripe\SiteConfig\SiteConfig.default
+  invalid:
+    Title: "Invalid Discount"
+    Type: "Fixed"
+    Code: "invalid"
+    Amount: 10
+    MinOrder: 20
+    Starts: "2018-01-01"
+    Expires: "2018-01-15"
+    Site: =>SilverStripe\SiteConfig\SiteConfig.default
