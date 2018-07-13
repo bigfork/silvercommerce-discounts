@@ -37,7 +37,8 @@
       },
       "autoload": {
           "psr-4": {
-              "SilverCommerce\\Discounts\\": "src/"
+              "SilverCommerce\\Discounts\\": "src/",
+              "SilverCommerce\\Discounts\\Tests\\": "tests/"
           }
       }
   }
