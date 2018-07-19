@@ -30,11 +30,6 @@
           "silvercommerce/settings": "~1.0",
           "silvercommerce/orders-admin": "~1.0"
       },
-      "extra": {
-          "expose": [
-              "client/dist"
-          ]
-      },
       "autoload": {
           "psr-4": {
               "SilverCommerce\\Discounts\\": "src/",
