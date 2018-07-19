@@ -1,0 +1,18 @@
+---
+Name: silvercommercediscountsconfig
+---
+# Update DB Fields
+SilverStripe\Security\Group:
+  belongs_many_many:
+    Discounts: SilverCommerce\Discounts\Model\Discount
+
+# Extensions
+SilverCommerce\OrdersAdmin\Model\Estimate:
+  extensions:
+    - SilverCommerce\Discounts\Extensions\EstimateExtension
+SilverStripe\SiteConfig\SiteConfig:
+  extensions:
+    - SilverCommerce\Discounts\Extensions\SiteConfigExtension
+SilverStripe\Security\Member:
+  extensions:
+    - SilverCommerce\Discounts\Extensions\MemberExtension
