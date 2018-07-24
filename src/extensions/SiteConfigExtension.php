@@ -2,12 +2,13 @@
 
 namespace SilverCommerce\Discounts\Extensions;
 
-use SilverStripe\ORM\DataExtension;
 use SilverStripe\Forms\FieldList;
-use SilverStripe\Forms\ToggleCompositeField;
+use SilverStripe\ORM\DataExtension;
+use SilverStripe\Forms\LiteralField;
 use SilverStripe\Forms\GridField\GridField;
-use SilverStripe\Forms\GridField\GridFieldConfig_RecordEditor;
 use SilverCommerce\Discounts\Model\Discount;
+use SilverStripe\Forms\ToggleCompositeField;
+use SilverStripe\Forms\GridField\GridFieldConfig_RecordEditor;
 
 /**
  * Add additional settings to the default siteconfig

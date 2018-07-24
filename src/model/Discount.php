@@ -5,8 +5,10 @@ namespace SilverCommerce\Discounts\Model;
 use SilverStripe\Core\Convert;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\Security\Group;
+use SilverStripe\Security\Security;
 use SilverStripe\Control\Controller;
 use SilverStripe\Forms\ReadonlyField;
+use SilverStripe\Security\Permission;
 use SilverStripe\SiteConfig\SiteConfig;
 use SilverStripe\Security\PermissionProvider;
 use SilverCommerce\OrdersAdmin\Control\ShoppingCart;
@@ -93,7 +95,7 @@ class Discount extends DataObject implements PermissionProvider
         $permissions = ["ADMIN", "DISCOUNTS_CREATE"];
 
         if (!$member) {
-            $member = Member::currentUser();
+            $member = Security::getCurrentUser();
         }
         
         if ($member && Permission::checkMember($member->ID, $permissions)) {
@@ -113,7 +115,7 @@ class Discount extends DataObject implements PermissionProvider
         $permissions = ["ADMIN", "DISCOUNTS_EDIT"];
 
         if (!$member) {
-            $member = Member::currentUser();
+            $member = Security::getCurrentUser();
         }
         
         if ($member && Permission::checkMember($member->ID, $permissions)) {
@@ -133,7 +135,7 @@ class Discount extends DataObject implements PermissionProvider
         $permissions = ["ADMIN", "DISCOUNTS_DELETE"];
 
         if (!$member) {
-            $member = Member::currentUser();
+            $member = Security::getCurrentUser();
         }
         
         if ($member && Permission::checkMember($member->ID, $permissions)) {
