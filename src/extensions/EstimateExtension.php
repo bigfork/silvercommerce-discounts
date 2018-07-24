@@ -4,6 +4,7 @@ namespace SilverCommerce\Discounts\Extensions;
 
 use SilverStripe\Forms\FieldList;
 use SilverStripe\ORM\DataExtension;
+use SilverStripe\Forms\DropdownField;
 use SilverCommerce\Discounts\Model\Discount;
 use SilverCommerce\Discounts\DiscountFactory;
 
