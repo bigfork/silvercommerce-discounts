@@ -11,7 +11,6 @@ use SilverStripe\Forms\ReadonlyField;
 use SilverStripe\Security\Permission;
 use SilverStripe\SiteConfig\SiteConfig;
 use SilverStripe\Security\PermissionProvider;
-use SilverCommerce\OrdersAdmin\Control\ShoppingCart;
 
 class Discount extends DataObject implements PermissionProvider
 {
