@@ -97,6 +97,7 @@ class EstimateExtension extends DataExtension
     public function updateCMSFields(FieldList $fields)
     {
         $main = $fields->findOrMakeTab("Root.Main");
+        $statuses = $this->owner->config()->get("statuses");
         $details = null;
         $totals = null;
 
@@ -115,7 +116,7 @@ class EstimateExtension extends DataExtension
             }
         }
 
-        if ($details) {
+        if ($details && $statuses && is_array($statuses)) {
             $details->insertBefore(
                 "Number",
                 DropdownField::create(
