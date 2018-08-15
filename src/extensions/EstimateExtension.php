@@ -3,7 +3,9 @@
 namespace SilverCommerce\Discounts\Extensions;
 
 use SilverStripe\Forms\FieldList;
+use SilverStripe\Forms\TextField;
 use SilverStripe\ORM\DataExtension;
+use SilverStripe\Forms\NumericField;
 use SilverStripe\Forms\DropdownField;
 use SilverCommerce\Discounts\Model\Discount;
 use SilverCommerce\Discounts\DiscountFactory;
@@ -100,6 +102,10 @@ class EstimateExtension extends DataExtension
         $statuses = $this->owner->config()->get("statuses");
         $details = null;
         $totals = null;
+        $misc = null;
+
+        $discount_code = $fields->dataFieldByName('DiscountCode');
+        $discount_amount = $fields->dataFieldByName('DiscountAmount');
 
         // Manually loop through fields to find info composite field, as
         // fieldByName cannot reliably find this.
@@ -111,6 +117,9 @@ class EstimateExtension extends DataExtension
                     }
                     if ($field->getName() == "OrdersDetailsTotals") {
                         $totals = $field;
+                    }
+                    if ($field->getName() == "OrdersDetailsMisc") {
+                        $misc = $field;
                     }
                 }
             }
@@ -126,5 +135,19 @@ class EstimateExtension extends DataExtension
                 )
             );
         }
+
+        if ($totals && $discount_amount) {
+            $totals->insertBefore(
+                "TotalValue",
+                $discount_amount
+            );
+        }
+
+        if ($misc && $discount_code) {
+            $misc->push(
+                $discount_code
+            );
+        }
+        
     }
 }
