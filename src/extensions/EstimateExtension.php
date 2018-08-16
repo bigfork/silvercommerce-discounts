@@ -2,6 +2,7 @@
 
 namespace SilverCommerce\Discounts\Extensions;
 
+use SilverStripe\Dev\Debug;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\TextField;
 use SilverStripe\ORM\DataExtension;
@@ -9,6 +10,7 @@ use SilverStripe\Forms\NumericField;
 use SilverStripe\Forms\DropdownField;
 use SilverCommerce\Discounts\Model\Discount;
 use SilverCommerce\Discounts\DiscountFactory;
+use SilverCommerce\TaxAdmin\Helpers\MathsHelper;
 
 /**
  * Add extra fields to an estimate (to track the discount)
@@ -18,12 +20,34 @@ class EstimateExtension extends DataExtension
 {
     private static $db = [
         'DiscountCode' => 'Varchar(99)',
-        'DiscountAmount' => 'Decimal'
+        'DiscountAmount' => 'Currency'
     ];
 
     private static $casting = [
         'DiscountDetails'   => 'Varchar'
     ];
+
+    /**
+     * retrieve the appropriate discount and assign its code to this.
+     *
+     * @param [type] $code
+     * @param boolean $valid use only valid discount codes, defaults to true;
+     * @return void
+     */
+    public function setDiscount($code, $valid = true)
+    {
+        $discount = null;
+
+        $discount = DiscountFactory::getByCode(
+            $code,
+            $valid
+        );
+
+        if ($discount) {
+            $this->owner->DiscountCode = $code;
+            $this->calculateDiscountAmount($discount);
+        }
+    }
 
     /**
      * Find the specific discount object for this order
@@ -35,7 +59,7 @@ class EstimateExtension extends DataExtension
         $discount = null;
 
         if (!empty($this->owner->DiscountCode)) {
-            $discount = DiscountFactory::getDiscountByCode(
+            $discount = DiscountFactory::getByCode(
                 $this->owner->DiscountCode,
                 false
             );
@@ -89,6 +113,36 @@ class EstimateExtension extends DataExtension
         } else {
             return "";
         }
+    }
+
+    /**
+     * retrieve to discount amount for this estimate.
+     *
+     * @return void
+     */
+    public function calculateDiscountAmount()
+    {
+        $discount = DiscountFactory::getByCode(
+            $this->owner->DiscountCode,
+            false
+        );
+
+        $total = $this->owner->getSubTotal();
+
+        $amount = $discount->calculateAmount($total);
+
+        $this->owner->DiscountAmount = $amount;
+    }
+
+    /**
+     * update the total price with the discount reduction.
+     *
+     * @param [type] $total
+     * @return void
+     */
+    public function updateTotal(&$total) 
+    {
+        $total -= $this->owner->DiscountAmount;
     }
 
     /**
@@ -149,5 +203,17 @@ class EstimateExtension extends DataExtension
             );
         }
         
+    }
+
+    /**
+     * if necessary, recalculate the discount amount when estimate is saved.
+     *
+     * @return void
+     */
+    public function onBeforeWrite() 
+    {
+        if ($this->owner->DiscountCode && (!method_exists($this->owner, 'isPaid') || !$this->owner->isPaid())) {
+            $this->calculateDiscountAmount();
+        } 
     }
 }

@@ -11,6 +11,7 @@ use SilverStripe\Forms\ReadonlyField;
 use SilverStripe\Security\Permission;
 use SilverStripe\SiteConfig\SiteConfig;
 use SilverStripe\Security\PermissionProvider;
+use SilverCommerce\TaxAdmin\Helpers\MathsHelper;
 
 class Discount extends DataObject implements PermissionProvider
 {
@@ -40,6 +41,31 @@ class Discount extends DataObject implements PermissionProvider
         "Starts",
         "Expires"
     ];
+
+    public function calculateAmount($value)
+    {
+        $converted_value = (int) ($value * 100);
+
+        switch ($this->Type) {
+        case 'Percentage':
+            $converted_amount = $converted_value * ($this->Amount / 100);
+            break;
+        case 'Fixed':
+            $converted_amount = $converted_value - $this->Amount;
+            break;
+        case 'Free Shipping':
+            $converted_amount = $converted_value;
+            break;
+        }
+
+        $amount = MathsHelper::round_up($converted_amount, 0)/100;
+
+        if ($amount > $value) {
+            $amount = $value;
+        }
+
+        return $amount;
+    }
 
     /**
      * Generate a random string that we can use for the code by default
