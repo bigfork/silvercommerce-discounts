@@ -19,9 +19,7 @@ class Discount extends DataObject implements PermissionProvider
 
     private static $db = [
         "Title"     => "Varchar",
-        "Type"      => "Enum('Fixed,Percentage,Free Shipping','Percentage')",
         "Code"      => "Varchar(99)",
-        "Amount"    => "Decimal",
         "MinOrder"  => "Decimal",
         "Starts"    => "Date",
         "Expires"   => "Date"
@@ -42,29 +40,15 @@ class Discount extends DataObject implements PermissionProvider
         "Expires"
     ];
 
+    /**
+     * calculate the price reduction for this discount
+     *
+     * @param [type] $value - the total/sub-total of the items this discount applies to.
+     * @return void
+     */
     public function calculateAmount($value)
     {
-        $converted_value = (int) ($value * 100);
-
-        switch ($this->Type) {
-        case 'Percentage':
-            $converted_amount = $converted_value * ($this->Amount / 100);
-            break;
-        case 'Fixed':
-            $converted_amount = $converted_value - $this->Amount;
-            break;
-        case 'Free Shipping':
-            $converted_amount = $converted_value;
-            break;
-        }
-
-        $amount = MathsHelper::round_up($converted_amount, 0)/100;
-
-        if ($amount > $value) {
-            $amount = $value;
-        }
-
-        return $amount;
+        return null;
     }
 
     /**
@@ -72,7 +56,7 @@ class Discount extends DataObject implements PermissionProvider
      *
      * @return string
      */
-    private static function generateRandomString($length = 10)
+    protected static function generateRandomString($length = 10)
     {
         $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $string = '';
