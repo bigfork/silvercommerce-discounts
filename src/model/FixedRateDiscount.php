@@ -9,6 +9,8 @@ class FixedRateDiscount extends Discount
 {
     private static $table_name = 'Discount_FixedRate';
 
+    private static $description = "Simple fixed value discount";
+
     private static $db = [
         "Amount"    => "Decimal"
     ];
@@ -24,6 +26,24 @@ class FixedRateDiscount extends Discount
         }
 
         return $amount;
+    }
+
+    public function appliedAmount(AppliedDiscount $item)
+    {
+        return $this->calculateAmount($item->Estimate()->getSubTotal());        
+    }
+
+    public function applyDiscount($estimate)
+    {
+        $applied = AppliedDiscount::create();
+        $applied->Code = $this->Code;
+        $applied->Title = $this->Title;
+        $applied->Value = $this->calculateAmount($estimate->getTotal());
+        $applied->EstimateID = $estimate->ID;
+
+        $applied->write();
+
+        $estimate->Discounts()->add($applied);
     }
 
 }

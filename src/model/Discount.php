@@ -12,6 +12,7 @@ use SilverStripe\Security\Permission;
 use SilverStripe\SiteConfig\SiteConfig;
 use SilverStripe\Security\PermissionProvider;
 use SilverCommerce\TaxAdmin\Helpers\MathsHelper;
+use SilverCommerce\Discounts\Model\AppliedDiscount;
 
 class Discount extends DataObject implements PermissionProvider
 {
@@ -43,12 +44,35 @@ class Discount extends DataObject implements PermissionProvider
     /**
      * calculate the price reduction for this discount
      *
-     * @param [type] $value - the total/sub-total of the items this discount applies to.
+     * @param Currency $value - the total/sub-total of the items this discount applies to.
      * @return void
      */
     public function calculateAmount($value)
     {
         return null;
+    }
+
+    /**
+     * calculate the value of a discount using an AppliedDiscount item.
+     *
+     * @param AppliedDiscount $item
+     * @return void
+     */
+    public function appliedAmount(AppliedDiscount $item)
+    {
+        return null;        
+    }
+
+    public function applyDiscount($estimate)
+    {
+        $applied = AppliedDiscount::create();
+        $applied->Code = $this->Code;
+        $applied->Title = $this->Title;
+        $applied->EstimateID = $estimate->ID;
+
+        $applied->write();
+
+        $estimate->Discounts()->add($applied);
     }
 
     /**

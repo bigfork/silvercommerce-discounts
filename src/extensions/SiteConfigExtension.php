@@ -25,8 +25,8 @@ class SiteConfigExtension extends DataExtension
     
     public function updateCMSFields(FieldList $fields)
     {
-        		// Setup add new button
-		$add_button = new GridFieldAddNewMultiClass("buttons-before-left");
+        // Setup add new button
+        $add_button = new GridFieldAddNewMultiClass("buttons-before-left");
         $add_button->setClasses($this->get_subclasses(Discount::class));
 
         $config = GridFieldConfig_RecordEditor::create();
@@ -51,11 +51,11 @@ class SiteConfigExtension extends DataExtension
         );
     }
 
-	/**
+    /**
      * Get a list of subclasses for the chosen type (either CatalogueProduct
      * or CatalogueCategory).
      *
-	 * @param string $classname Classname of object we will get list for
+     * @param string $classname Classname of object we will get list for
      * @return array
      */
     protected function get_subclasses($classname) {
@@ -66,7 +66,7 @@ class SiteConfigExtension extends DataExtension
 
         foreach ($classnames as $classname) {
             $instance = singleton($classname);
-            $description = Config::inst()->get($classname, 'description');                    
+            $description = Config::inst()->get($classname, 'description');
             $description = ($description) ? $instance->i18n_singular_name() . ': ' . $description : $instance->i18n_singular_name();
             
             $return[$classname] = $description;

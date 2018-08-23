@@ -11,6 +11,8 @@ use SilverStripe\Forms\DropdownField;
 use SilverCommerce\Discounts\Model\Discount;
 use SilverCommerce\Discounts\DiscountFactory;
 use SilverCommerce\TaxAdmin\Helpers\MathsHelper;
+use SilverCommerce\Discounts\Model\AppliedDiscount;
+use SilverStripe\Forms\GridField\GridFieldConfig_RecordEditor;
 
 /**
  * Add extra fields to an estimate (to track the discount)
@@ -18,9 +20,8 @@ use SilverCommerce\TaxAdmin\Helpers\MathsHelper;
  */
 class EstimateExtension extends DataExtension
 {
-    private static $db = [
-        'DiscountCode' => 'Varchar(99)',
-        'DiscountAmount' => 'Currency'
+    private static $has_many = [
+        'Discounts' => AppliedDiscount::class
     ];
 
     private static $casting = [
@@ -28,47 +29,13 @@ class EstimateExtension extends DataExtension
     ];
 
     /**
-     * retrieve the appropriate discount and assign its code to this.
-     *
-     * @param [type] $code
-     * @param boolean $valid use only valid discount codes, defaults to true;
-     * @return void
-     */
-    public function setDiscount($code, $valid = true)
-    {
-        $discount = null;
-
-        $discount = DiscountFactory::getByCode(
-            $code,
-            $valid
-        );
-
-        if ($discount) {
-            $this->owner->DiscountCode = $code;
-            $this->calculateDiscountAmount($discount);
-        }
-    }
-
-    /**
      * Find the specific discount object for this order
      * 
      * @return Discount
      */
-    public function getDiscount()
+    public function findDiscount($code)
     {
-        $discount = null;
-
-        if (!empty($this->owner->DiscountCode)) {
-            $discount = DiscountFactory::getByCode(
-                $this->owner->DiscountCode,
-                false
-            );
-        }
-
-        if (empty($discount)) {
-            $discount = Discount::create();
-            $discount->ID = -1;
-        }
+        $discount = $this->owner->Discounts()->find('Code', $code);
 
         return $discount;
     }
@@ -78,60 +45,34 @@ class EstimateExtension extends DataExtension
      */
     public function hasDiscount()
     {
-        return (ceil($this->owner->DiscountAmount)) ? true : false;
+        return (ceil($this->owner->getDiscountAmount())) ? true : false;
     }
 
-    /**
-     * Generate a string outlining the details of selected
-     * discount
-     *
-     * @return string
-     */
-    public function getDiscountDetails()
+    public function recalculateDiscounts()
     {
-        $discount = null;
-        $name = null;
-        $amount = null;
-
-        // Is there a discount code
-        if (!empty($this->owner->DiscountCode)) {
-            $discount = $this->owner->getDiscount();
-
-            if ($discount->exists()) {
-                $name = $discount->Title;
-            } else {
-                $name = $this->owner->DiscountCode;
+        if ($this->owner->Discounts()->Count() > 0) {
+            foreach ($this->owner->Discounts() as $discount) {
+                $discount->Value = $discount->updateDiscount();
             }
         }
-
-        if (ceil($this->owner->DiscountAmount) > 0) {
-            $amount = $this->owner->dbObject("DiscountAmount")->Nice();
-        }
-
-        if (isset($name) && isset($amount)) {
-            return $name . " (" . $amount . ")";
-        } else {
-            return "";
-        }
     }
 
     /**
-     * retrieve to discount amount for this estimate.
+     * get the total of all discounts applied to this estimate.
      *
      * @return void
      */
-    public function calculateDiscountAmount()
+    public function getDiscountAmount()
     {
-        $discount = DiscountFactory::getByCode(
-            $this->owner->DiscountCode,
-            false
-        );
+        $total = 0;
 
-        $total = $this->owner->getSubTotal();
+        if ($this->owner->Discounts()->Count() > 0) {
+            foreach ($this->owner->Discounts() as $discount) {
+                $total += $discount->Value;
+            }
+        }
 
-        $amount = $discount->calculateAmount($total);
-
-        $this->owner->DiscountAmount = $amount;
+        return $total;
     }
 
     /**
@@ -142,7 +83,7 @@ class EstimateExtension extends DataExtension
      */
     public function updateTotal(&$total) 
     {
-        $total -= $this->owner->DiscountAmount;
+        $total -= $this->owner->getDiscountAmount();
     }
 
     /**
@@ -157,6 +98,9 @@ class EstimateExtension extends DataExtension
         $details = null;
         $totals = null;
         $misc = null;
+
+        $fields->dataFieldByName('Discounts')
+            ->setConfig(GridFieldConfig_RecordEditor::create());
 
         $discount_code = $fields->dataFieldByName('DiscountCode');
         $discount_amount = $fields->dataFieldByName('DiscountAmount');
@@ -210,10 +154,10 @@ class EstimateExtension extends DataExtension
      *
      * @return void
      */
-    public function onBeforeWrite() 
+    public function onAfterWrite() 
     {
-        if ($this->owner->DiscountCode && (!method_exists($this->owner, 'isPaid') || !$this->owner->isPaid())) {
-            $this->calculateDiscountAmount();
+        if ($this->owner->Discounts()->exists() && (!method_exists($this->owner, 'isPaid') || !$this->owner->isPaid())) {
+            $this->recalculateDiscounts();
         } 
     }
 }

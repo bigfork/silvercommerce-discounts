@@ -7,8 +7,9 @@ use SilverCommerce\TaxAdmin\Helpers\MathsHelper;
 
 class FreePostageDiscount extends Discount
 {
-
     private static $table_name = 'Discount_FreePostage';
+
+    private static $description = "removes the postage cost from an order";
 
     public function calculateAmount($value)
     {
@@ -23,6 +24,25 @@ class FreePostageDiscount extends Discount
         }
 
         return $amount;
+    }
+
+    public function appliedAmount(AppliedDiscount $item)
+    {
+        return $this->calculateAmount($item->Estimate()->getPostage()->getPrice());
+    }
+
+    public function applyDiscount($estimate)
+    {
+        $postage = $estimate->getPostage();
+        $applied = AppliedDiscount::create();
+        $applied->Code = $this->Code;
+        $applied->Title = $this->Title;
+        $applied->Value = $this->calculateAmount($postage->getPrice());
+        $applied->EstimateID = $estimate->ID;
+
+        $applied->write();
+
+        $estimate->Discounts()->add($applied);
     }
 
 }

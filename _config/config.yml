@@ -16,3 +16,6 @@ SilverStripe\SiteConfig\SiteConfig:
 SilverStripe\Security\Member:
   extensions:
     - SilverCommerce\Discounts\Extensions\MemberExtension
+SilverCommerce\OrdersAdmin\Model\LineItem:
+  extensions:
+    - SilverCommerce\Discounts\Extensions\LineItemExtension

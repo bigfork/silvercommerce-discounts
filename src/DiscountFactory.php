@@ -93,6 +93,13 @@ class DiscountFactory
         return $list;
     }
 
+    public static function generateAppliedDiscount($code, $estimate)
+    {
+        $discount = self::getByCode($code);
+
+        $discount->applyDiscount($estimate);        
+    }
+
     /**
      * Get a list of valid discounts as an array
      * 
