@@ -11,8 +11,10 @@ class FreePostageDiscount extends Discount
 
     private static $description = "removes the postage cost from an order";
 
-    public function calculateAmount($value)
+    public function calculateAmount($estimate)
     {
+        $value = $estimate->getPostage()->getPrice();
+
         $converted_value = (int) ($value * 100);
 
         $converted_amount = $converted_value;
@@ -28,16 +30,15 @@ class FreePostageDiscount extends Discount
 
     public function appliedAmount(AppliedDiscount $item)
     {
-        return $this->calculateAmount($item->Estimate()->getPostage()->getPrice());
+        return $this->calculateAmount($item->Estimate());
     }
 
     public function applyDiscount($estimate)
     {
-        $postage = $estimate->getPostage();
         $applied = AppliedDiscount::create();
         $applied->Code = $this->Code;
         $applied->Title = $this->Title;
-        $applied->Value = $this->calculateAmount($postage->getPrice());
+        $applied->Value = $this->calculateAmount($estimate);
         $applied->EstimateID = $estimate->ID;
 
         $applied->write();

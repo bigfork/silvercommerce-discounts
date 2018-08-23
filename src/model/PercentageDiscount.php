@@ -17,11 +17,13 @@ class PercentageDiscount extends Discount
 
     public function appliedAmount(AppliedDiscount $item)
     {
-        return $this->calculateAmount($item->Estimate()->getSubTotal());        
+        return $this->calculateAmount($item->Estimate());        
     }
 
-    public function calculateAmount($value)
+    public function calculateAmount($estimate)
     {
+        $value = $estimate->getSubTotal();
+
         $converted_value = (int) ($value * 100);
 
         $converted_amount = $converted_value * ($this->Amount / 100);
@@ -40,7 +42,7 @@ class PercentageDiscount extends Discount
         $applied = AppliedDiscount::create();
         $applied->Code = $this->Code;
         $applied->Title = $this->Title;
-        $applied->Value = $this->calculateAmount($estimate->getSubTotal());
+        $applied->Value = $this->calculateAmount($estimate);
         $applied->EstimateID = $estimate->ID;
 
         $applied->write();

@@ -47,7 +47,7 @@ class Discount extends DataObject implements PermissionProvider
      * @param Currency $value - the total/sub-total of the items this discount applies to.
      * @return void
      */
-    public function calculateAmount($value)
+    public function calculateAmount($estimate)
     {
         return null;
     }

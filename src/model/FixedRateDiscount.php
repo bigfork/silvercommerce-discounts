@@ -17,6 +17,8 @@ class FixedRateDiscount extends Discount
 
     public function calculateAmount($value)
     {
+        $value = $estimate->getTotal();
+        
         $converted_value = (int) ($value * 100);
 
         $amount = $this->Amount;
@@ -30,7 +32,7 @@ class FixedRateDiscount extends Discount
 
     public function appliedAmount(AppliedDiscount $item)
     {
-        return $this->calculateAmount($item->Estimate()->getSubTotal());        
+        return $this->calculateAmount($item->Estimate());        
     }
 
     public function applyDiscount($estimate)
@@ -38,7 +40,7 @@ class FixedRateDiscount extends Discount
         $applied = AppliedDiscount::create();
         $applied->Code = $this->Code;
         $applied->Title = $this->Title;
-        $applied->Value = $this->calculateAmount($estimate->getTotal());
+        $applied->Value = $this->calculateAmount($estimate);
         $applied->EstimateID = $estimate->ID;
 
         $applied->write();
