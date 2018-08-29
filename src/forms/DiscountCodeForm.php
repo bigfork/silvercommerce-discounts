@@ -82,12 +82,18 @@ class DiscountCodeForm extends Form
         $code_to_search = $data['DiscountCode'];
         $cart = ShoppingCartFactory::create();
 
-        $estimate = $this->getEstimate();
-        // First check if the discount is already added (so we don't
-        // query the DB if we don't have to).
-        if (!$estimate->findDiscount($code_to_search)) {
-            DiscountFactory::generateAppliedDiscount($code_to_search, $estimate);
-            $cart->save();
+        $discount = DiscountFactory::getByCode($code_to_search);
+        
+        if (!$discount) {
+            $form->sessionMessage("The entered code is invalid.", 'bad');
+        } else {
+            $estimate = $this->getEstimate();
+            // First check if the discount is already added (so we don't
+            // query the DB if we don't have to).
+            if (!$estimate->findDiscount($code_to_search)) {
+                DiscountFactory::generateAppliedDiscount($code_to_search, $estimate);
+                $cart->save();
+            }
         }
         
         return $this->getRequestHandler()->redirectBack();

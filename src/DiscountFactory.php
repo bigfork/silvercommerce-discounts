@@ -96,7 +96,11 @@ class DiscountFactory
     public static function generateAppliedDiscount($code, $estimate)
     {
         $discount = self::getByCode($code);
+        
+        if (!$discount) {
 
+        }
+        
         $discount->applyDiscount($estimate);        
     }
 

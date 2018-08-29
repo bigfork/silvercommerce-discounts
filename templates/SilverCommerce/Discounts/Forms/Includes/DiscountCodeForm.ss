@@ -2,9 +2,9 @@
 <form $addExtraClass("form-inline").AttributesHTML>
 <% end_if %>
 	<% if $Message %>
-	<p id="{$FormName}_error" class="message $MessageType">$Message</p>
+	<p id="{$FormName}_error" class="message $MessageType col-12">$Message</p>
 	<% else %>
-	<p id="{$FormName}_error" class="message $MessageType" style="display: none"></p>
+	<p id="{$FormName}_error" class="message $MessageType col-12" style="display: none"></p>
 	<% end_if %>
 
 	<fieldset>
