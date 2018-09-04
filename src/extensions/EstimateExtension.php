@@ -13,6 +13,8 @@ use SilverCommerce\Discounts\DiscountFactory;
 use SilverCommerce\TaxAdmin\Helpers\MathsHelper;
 use SilverCommerce\Discounts\Model\AppliedDiscount;
 use SilverStripe\Forms\GridField\GridFieldConfig_RecordEditor;
+use SilverStripe\Forms\GridField\GridFieldDeleteAction;
+use SilverStripe\Forms\GridField\GridFieldAddExistingAutocompleter;
 
 /**
  * Add extra fields to an estimate (to track the discount)
@@ -98,9 +100,16 @@ class EstimateExtension extends DataExtension
         $details = null;
         $totals = null;
         $misc = null;
+        $discounts = $fields->dataFieldByName('Discounts');
 
-        $fields->dataFieldByName('Discounts')
-            ->setConfig(GridFieldConfig_RecordEditor::create());
+        // Switch unlink action to delete
+        if ($discounts) {
+            $discounts
+                ->getConfig()
+                ->removeComponentsByType(GridFieldDeleteAction::class)
+                ->removeComponentsByType(GridFieldAddExistingAutocompleter::class)
+                ->addComponent(new GridFieldDeleteAction());
+        }
 
         $discount_code = $fields->dataFieldByName('DiscountCode');
         $discount_amount = $fields->dataFieldByName('DiscountAmount');
