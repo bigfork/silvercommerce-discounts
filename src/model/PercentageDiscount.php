@@ -28,7 +28,7 @@ class PercentageDiscount extends Discount
 
         $converted_amount = $converted_value * ($this->Amount / 100);
 
-        $amount = MathsHelper::round_up($converted_amount, 0)/100;
+        $amount = MathsHelper::round($converted_amount, 0)/100;
 
         if ($amount > $value) {
             $amount = $value;

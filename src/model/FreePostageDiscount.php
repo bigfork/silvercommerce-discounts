@@ -19,7 +19,7 @@ class FreePostageDiscount extends Discount
 
         $converted_amount = $converted_value;
 
-        $amount = MathsHelper::round_up($converted_amount, 0)/100;
+        $amount = MathsHelper::round($converted_amount, 0)/100;
 
         if ($amount > $value) {
             $amount = $value;
