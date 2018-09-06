@@ -82,7 +82,7 @@ class DiscountCodeForm extends Form
         $code_to_search = $data['DiscountCode'];
         $cart = ShoppingCartFactory::create();
 
-        $discount = DiscountFactory::getByCode($code_to_search);
+        $discount = DiscountFactory::create()->getByIdent($code_to_search);
         
         if (!$discount) {
             $form->sessionMessage("The entered code is invalid.", 'bad');
@@ -91,7 +91,7 @@ class DiscountCodeForm extends Form
             // First check if the discount is already added (so we don't
             // query the DB if we don't have to).
             if (!$estimate->findDiscount($code_to_search)) {
-                DiscountFactory::generateAppliedDiscount($code_to_search, $estimate);
+                DiscountFactory::create()->generateAppliedDiscount($code_to_search, $estimate);
                 $cart->save();
             }
         }

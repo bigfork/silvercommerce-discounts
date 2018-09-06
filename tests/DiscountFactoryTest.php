@@ -16,34 +16,34 @@ class DiscountFactoryTest extends SapphireTest
      */
     protected static $fixture_file = 'Discounts.yml';
 
-    public function testGetByCode()
+    public function testgetByIdent()
     {
         DBDatetime::set_mock_now('2018-05-17 00:00:00');
         $code = "10percent";
 
-        $discount = DiscountFactory::getByCode($code);
+        $discount = DiscountFactory::create()->getByIdent($code);
         $this->assertNotEmpty($discount);
         $this->assertEquals($code, $discount->Code);
 
         // Check past
         DBDatetime::set_mock_now('2018-01-15 00:00:00');
 
-        $discount = DiscountFactory::getByCode($code);
+        $discount = DiscountFactory::create()->getByIdent($code);
         $this->assertEmpty($discount);
 
         // Ignore validity
-        $discount = DiscountFactory::getByCode($code, false);
+        $discount = DiscountFactory::create()->getByIdent($code, false);
         $this->assertNotEmpty($discount);
         $this->assertEquals($code, $discount->Code);
 
         // Check future
         DBDatetime::set_mock_now('2018-09-15 00:00:00');
 
-        $discount = DiscountFactory::getByCode($code);
+        $discount = DiscountFactory::create()->getByIdent($code);
         $this->assertEmpty($discount);
 
         // Ignore validity
-        $discount = DiscountFactory::getByCode($code, false);
+        $discount = DiscountFactory::create()->getByIdent($code, false);
         $this->assertNotEmpty($discount);
         $this->assertEquals($code, $discount->Code);
     }

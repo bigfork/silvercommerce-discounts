@@ -48,6 +48,6 @@ class AppliedDiscount extends DataObject
 
     public function getDiscount()
     {
-        return DiscountFactory::getByCode($this->Code);
+        return DiscountFactory::create()->getByIdent($this->Code);
     }
 }

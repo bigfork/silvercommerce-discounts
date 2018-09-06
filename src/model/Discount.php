@@ -45,29 +45,30 @@ class Discount extends DataObject implements PermissionProvider
      * calculate the price reduction for this discount
      *
      * @param Currency $value - the total/sub-total of the items this discount applies to.
-     * @return void
+     * @return int
      */
     public function calculateAmount($estimate)
     {
-        return null;
+        return 0;
     }
 
     /**
      * calculate the value of a discount using an AppliedDiscount item.
      *
      * @param AppliedDiscount $item
-     * @return void
+     * @return float
      */
     public function appliedAmount(AppliedDiscount $item)
     {
-        return null;        
+        return 0;        
     }
 
-    public function applyDiscount($estimate)
+    public function applyDiscount($estimate, $code = null)
     {
         $applied = AppliedDiscount::create();
         $applied->Code = $this->Code;
         $applied->Title = $this->Title;
+        $applied->Value = $this->calculateAmount($estimate);
         $applied->EstimateID = $estimate->ID;
 
         $applied->write();

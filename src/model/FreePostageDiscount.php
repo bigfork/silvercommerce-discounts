@@ -33,17 +33,4 @@ class FreePostageDiscount extends Discount
         return $this->calculateAmount($item->Estimate());
     }
 
-    public function applyDiscount($estimate)
-    {
-        $applied = AppliedDiscount::create();
-        $applied->Code = $this->Code;
-        $applied->Title = $this->Title;
-        $applied->Value = $this->calculateAmount($estimate);
-        $applied->EstimateID = $estimate->ID;
-
-        $applied->write();
-
-        $estimate->Discounts()->add($applied);
-    }
-
 }

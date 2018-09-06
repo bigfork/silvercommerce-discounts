@@ -26,9 +26,9 @@ class DiscountFactory
      * @param string  $code       A discount code to find
      * @param boolean $only_valid Only find valid codes
      */
-    public static function getByCode($code, $only_valid = true)
+    public function getByIdent($ident, $only_valid = true)
     {
-        $discount = Discount::get()->find("Code", $code);
+        $discount = Discount::get()->find("Code", $ident);
 
         // Check if this discount is valid
         if ($discount && $only_valid) {
@@ -93,15 +93,15 @@ class DiscountFactory
         return $list;
     }
 
-    public static function generateAppliedDiscount($code, $estimate)
+    public function generateAppliedDiscount($code, $estimate)
     {
-        $discount = self::getByCode($code);
+        $discount = $this->getByIdent($code);
         
         if (!$discount) {
 
         }
         
-        $discount->applyDiscount($estimate);        
+        $discount->applyDiscount($estimate, $code);        
     }
 
     /**
