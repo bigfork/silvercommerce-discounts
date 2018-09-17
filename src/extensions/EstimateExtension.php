@@ -27,7 +27,8 @@ class EstimateExtension extends DataExtension
     ];
 
     private static $casting = [
-        'DiscountDetails'   => 'Varchar'
+        'DiscountDetails'   => 'Varchar',
+        'DiscountTotal'   => 'Currency'
     ];
 
     /**
@@ -73,6 +74,8 @@ class EstimateExtension extends DataExtension
                 $total += $discount->Value;
             }
         }
+
+        $this->owner->extend("updateDiscountTotal", $total);
 
         return $total;
     }
