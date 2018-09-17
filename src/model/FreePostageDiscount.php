@@ -3,6 +3,7 @@
 namespace SilverCommerce\Discounts\Model;
 
 use SilverCommerce\Discounts\Model\Discount;
+use SilverCommerce\OrdersAdmin\Model\Estimate;
 use SilverCommerce\TaxAdmin\Helpers\MathsHelper;
 
 class FreePostageDiscount extends Discount
@@ -11,7 +12,7 @@ class FreePostageDiscount extends Discount
 
     private static $description = "removes the postage cost from an order";
 
-    public function calculateAmount($estimate)
+    public function calculateAmount(Estimate $estimate)
     {
         $value = $estimate->getPostage()->getPrice();
 

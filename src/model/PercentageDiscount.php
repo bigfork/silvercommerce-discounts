@@ -3,6 +3,7 @@
 namespace SilverCommerce\Discounts\Model;
 
 use SilverCommerce\Discounts\Model\Discount;
+use SilverCommerce\OrdersAdmin\Model\Estimate;
 use SilverCommerce\TaxAdmin\Helpers\MathsHelper;
 
 class PercentageDiscount extends Discount
@@ -20,7 +21,7 @@ class PercentageDiscount extends Discount
         return $this->calculateAmount($item->Estimate());        
     }
 
-    public function calculateAmount($estimate)
+    public function calculateAmount(Estimate $estimate)
     {
         $value = $estimate->getSubTotal();
 
