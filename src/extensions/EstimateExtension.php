@@ -47,7 +47,7 @@ class EstimateExtension extends DataExtension
      */
     public function hasDiscount()
     {
-        return (ceil($this->owner->getDiscountAmount())) ? true : false;
+        return (ceil($this->owner->getDiscountTotal())) ? true : false;
     }
 
     public function recalculateDiscounts()
@@ -64,7 +64,7 @@ class EstimateExtension extends DataExtension
      *
      * @return void
      */
-    public function getDiscountAmount()
+    public function getDiscountTotal()
     {
         $total = 0;
 
@@ -85,7 +85,7 @@ class EstimateExtension extends DataExtension
      */
     public function updateTotal(&$total) 
     {
-        $total -= $this->owner->getDiscountAmount();
+        $total -= $this->owner->getDiscountTotal();
     }
 
     /**
@@ -112,7 +112,7 @@ class EstimateExtension extends DataExtension
         }
 
         $discount_code = $fields->dataFieldByName('DiscountCode');
-        $discount_amount = $fields->dataFieldByName('DiscountAmount');
+        $discount_amount = $fields->dataFieldByName('DiscountTotal');
 
         // Manually loop through fields to find info composite field, as
         // fieldByName cannot reliably find this.
