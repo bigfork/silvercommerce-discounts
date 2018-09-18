@@ -5,10 +5,11 @@ namespace SilverCommerce\Discounts;
 use DateTime;
 use SilverStripe\ORM\DB;
 use SilverStripe\SiteConfig\SiteConfig;
+use SilverStripe\Subsites\Model\Subsite;
+use SilverStripe\Core\Config\Configurable;
+use SilverStripe\Core\Injector\Injectable;
 use SilverStripe\ORM\FieldType\DBDatetime;
 use SilverCommerce\Discounts\Model\Discount;
-use SilverStripe\Core\Injector\Injectable;
-use SilverStripe\Core\Config\Configurable;
 
 /**
  * Simple factroy to handle getting discounts (either by code or valid)
@@ -28,7 +29,14 @@ class DiscountFactory
      */
     public function getByIdent($ident, $only_valid = true)
     {
-        $discount = Discount::get()->find("Code", $ident);
+            $siteconfig = SiteConfig::current_site_config();
+            
+            $discount = Discount::get()->filter(
+                [
+                    "Code" => $ident,
+                    'SiteID' => $siteconfig->ID
+                ]
+            )->first();
 
         // Check if this discount is valid
         if ($discount && $only_valid) {
