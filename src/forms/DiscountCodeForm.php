@@ -83,10 +83,10 @@ class DiscountCodeForm extends Form
         $code_to_search = $data['DiscountCode'];
         $cart = ShoppingCartFactory::create();
         $existing = $cart->getCurrent()->Discounts();
-        $multi = Config::inst()->get(ShoppingCartFactory::class, 'allow_multi_discounts');
+        $limit = Config::inst()->get(ShoppingCartFactory::class, 'discount_limit');
 
-        if (!$multi && $existing->exists()) {
-            $form->sessionMessage("Only one code can be used at a time.", 'bad');
+        if ($limit && $existing->exists() && $existing->count() >= $limit) {
+            $form->sessionMessage("Only ".$limit." discount code(s) can be used at a time.", 'bad');
             return $this->getRequestHandler()->redirectBack();
         }
 
