@@ -11,6 +11,7 @@ use SilverStripe\Forms\ReadonlyField;
 use SilverStripe\Security\Permission;
 use SilverStripe\SiteConfig\SiteConfig;
 use SilverStripe\Security\PermissionProvider;
+use SilverCommerce\OrdersAdmin\Model\Estimate;
 use SilverCommerce\TaxAdmin\Helpers\MathsHelper;
 use SilverCommerce\Discounts\Model\AppliedDiscount;
 
@@ -47,7 +48,7 @@ class Discount extends DataObject implements PermissionProvider
      * @param Currency $value - the total/sub-total of the items this discount applies to.
      * @return int
      */
-    public function calculateAmount($estimate)
+    public function calculateAmount(Estimate $estimate)
     {
         return 0;
     }

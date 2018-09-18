@@ -3,6 +3,7 @@
 namespace SilverCommerce\Discounts\Model;
 
 use SilverCommerce\Discounts\Model\Discount;
+use SilverCommerce\OrdersAdmin\Model\Estimate;
 use SilverCommerce\TaxAdmin\Helpers\MathsHelper;
 
 class FixedRateDiscount extends Discount
@@ -15,10 +16,10 @@ class FixedRateDiscount extends Discount
         "Amount"    => "Decimal"
     ];
 
-    public function calculateAmount($value)
+    public function calculateAmount(Estimate $estimate)
     {
         $value = $estimate->getTotal();
-        
+
         $converted_value = (int) ($value * 100);
 
         $amount = $this->Amount;
