@@ -6,6 +6,7 @@ use SilverStripe\Forms\Form;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\TextField;
 use SilverStripe\Forms\FormAction;
+use SilverStripe\Core\Config\Config;
 use SilverStripe\Forms\RequiredFields;
 use SilverStripe\Control\RequestHandler;
 use SilverCommerce\Discounts\DiscountFactory;
@@ -81,6 +82,13 @@ class DiscountCodeForm extends Form
     {
         $code_to_search = $data['DiscountCode'];
         $cart = ShoppingCartFactory::create();
+        $existing = $cart->getCurrent()->Discounts();
+        $multi = Config::inst()->get(ShoppingCartFactory::class, 'allow_multi_discounts');
+
+        if (!$multi && $existing->exists()) {
+            $form->sessionMessage("Only one code can be used at a time.", 'bad');
+            return $this->getRequestHandler()->redirectBack();
+        }
 
         $discount = DiscountFactory::create()->getByIdent($code_to_search);
         
