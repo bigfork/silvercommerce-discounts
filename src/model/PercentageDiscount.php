@@ -35,6 +35,10 @@ class PercentageDiscount extends Discount
             $amount = $value;
         }
 
+        if ($value < $min) {
+            $amount = 0;
+        }
+
         return $amount;
     }
 }

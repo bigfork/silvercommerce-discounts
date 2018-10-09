@@ -19,10 +19,15 @@ class FixedRateDiscount extends Discount
     public function calculateAmount(Estimate $estimate)
     {
         $value = $estimate->getTotal();
+        $min = (float) $this->MinOrder;
 
         $converted_value = (int) ($value * 100);
 
         $amount = $this->Amount;
+
+        if ($value < $min) {
+            $amount = 0;
+        }
 
         if ($amount > $value) {
             $amount = $value;

@@ -25,6 +25,10 @@ class FreePostageDiscount extends Discount
         if ($amount > $value) {
             $amount = $value;
         }
+        
+        if ($value < $min) {
+            $amount = 0;
+        }
 
         return $amount;
     }
