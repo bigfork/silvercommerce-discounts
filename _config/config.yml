@@ -19,3 +19,6 @@ SilverStripe\Security\Member:
 SilverCommerce\OrdersAdmin\Model\LineItem:
   extensions:
     - SilverCommerce\Discounts\Extensions\LineItemExtension
+SilverCommerce\CatalogueAdmin\Model\CatalogueCategory:
+  extensions:
+    - SilverCommerce\Discounts\Extensions\DiscountCategoryExtension

@@ -14,6 +14,7 @@ use SilverStripe\Security\PermissionProvider;
 use SilverCommerce\OrdersAdmin\Model\Estimate;
 use SilverCommerce\TaxAdmin\Helpers\MathsHelper;
 use SilverCommerce\Discounts\Model\AppliedDiscount;
+use SilverCommerce\CatalogueAdmin\Model\CatalogueCategory;
 
 class Discount extends DataObject implements PermissionProvider
 {
@@ -32,7 +33,8 @@ class Discount extends DataObject implements PermissionProvider
     ];
 
     private static $many_many = [
-        "Groups"    => Group::class
+        "Groups"    => Group::class,
+        "Categories" => CatalogueCategory::class
     ];
 
     private static $summary_fields = [

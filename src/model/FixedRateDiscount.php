@@ -2,6 +2,7 @@
 
 namespace SilverCommerce\Discounts\Model;
 
+use SilverStripe\ORM\ArrayList;
 use SilverCommerce\Discounts\Model\Discount;
 use SilverCommerce\OrdersAdmin\Model\Estimate;
 use SilverCommerce\TaxAdmin\Helpers\MathsHelper;
@@ -18,10 +19,24 @@ class FixedRateDiscount extends Discount
 
     public function calculateAmount(Estimate $estimate)
     {
+        $cats = $this->Categories();
+        $all_products = ArrayList::create();
         $value = $estimate->getTotal();
         $min = (float) $this->MinOrder;
 
-        $converted_value = (int) ($value * 100);
+        if ($cats->count() > 0) {
+            $value = 0;
+            foreach ($cats as $cat) {
+                $all_products->merge($cat->Products());
+            }
+
+            foreach ($estimate->Items() as $line_item) {
+                $match = $line_item->FindStockItem();
+                if ($all_products->find('ID', $match->ID)) {
+                    $value += ($line_item->Quantity * $line_item->Price);
+                }
+            }
+        }
 
         $amount = $this->Amount;
 
