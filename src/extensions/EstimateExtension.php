@@ -122,9 +122,6 @@ class EstimateExtension extends DataExtension
         foreach ($main->getChildren() as $field) {
             if ($field->getName() == "OrdersDetails") {
                 foreach ($field->getChildren() as $field) {
-                    if ($field->getName() == "OrdersDetailsInfo") {
-                        $details = $field;
-                    }
                     if ($field->getName() == "OrdersDetailsTotals") {
                         $totals = $field;
                     }
@@ -133,17 +130,6 @@ class EstimateExtension extends DataExtension
                     }
                 }
             }
-        }
-
-        if ($details && $statuses && is_array($statuses)) {
-            $details->insertBefore(
-                "Number",
-                DropdownField::create(
-                    'Status',
-                    null,
-                    $this->owner->config()->get("statuses")
-                )
-            );
         }
 
         if ($totals && $discount_amount) {
