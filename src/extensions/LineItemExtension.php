@@ -28,7 +28,9 @@ class LineItemExtension extends DataExtension
         $parent = $this->owner->Parent();
         $total = $parent->getDiscountTotal();
         $count = $parent->getTotalItems();
-
-        return $total/$count;
+        if ($count > 0) {
+            return $total/$count;
+        }
+        return 0;
     }
 }
