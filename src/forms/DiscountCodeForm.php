@@ -82,7 +82,7 @@ class DiscountCodeForm extends Form
     {
         $code_to_search = $data['DiscountCode'];
         $cart = ShoppingCartFactory::create();
-        $existing = $cart->getCurrent()->Discounts();
+        $existing = $cart->getOrder()->Discounts();
         $limit = Config::inst()->get(ShoppingCartFactory::class, 'discount_limit');
 
         if ($limit && $existing->exists() && $existing->count() >= $limit) {

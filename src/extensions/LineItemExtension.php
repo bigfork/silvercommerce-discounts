@@ -18,14 +18,16 @@ class LineItemExtension extends DataExtension
      */
     public function updateUnitTax(&$total)
     {
-        $total = (($this->owner->UnitPrice - $this->getDiscountTotal()) / 100) * $this->owner->TaxRate;
+        $percent = $this->getOwner()->TaxPercentage;
+        $price = $this->getOwner()->UnitPrice;
+        $total = (($price - $this->getDiscountTotal()) / 100) * $percent;
 
         return $total;
     }
 
     public function getDiscountTotal()
     {
-        $parent = $this->owner->Parent();
+        $parent = $this->getOwner()->Parent();
         $total = $parent->getDiscountTotal();
         $count = $parent->getTotalItems();
         if ($count > 0) {
