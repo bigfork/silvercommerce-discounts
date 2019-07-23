@@ -35,6 +35,8 @@
               "SilverCommerce\\Discounts\\": "src/",
               "SilverCommerce\\Discounts\\Tests\\": "tests/"
           }
-      }
+      },
+      "minimum-stability": "dev",
+      "prefer-stable": true
   }
   
