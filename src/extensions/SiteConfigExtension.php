@@ -55,10 +55,11 @@ class SiteConfigExtension extends DataExtension
      * Get a list of subclasses for the chosen type (either CatalogueProduct
      * or CatalogueCategory).
      *
-     * @param string $classname Classname of object we will get list for
+     * @param  string $classname Classname of object we will get list for
      * @return array
      */
-    protected function get_subclasses($classname) {
+    protected function get_subclasses($classname)
+    {
         // Get a list of available product classes
         $classnames = ClassInfo::subclassesFor($classname);
         array_shift($classnames);

@@ -8,7 +8,7 @@ use SilverStripe\ORM\ArrayList;
 /**
  * Add additional settings to a memeber object
  *
- * @package orders-admin
+ * @package    orders-admin
  * @subpackage extensions
  */
 class MemberExtension extends DataExtension

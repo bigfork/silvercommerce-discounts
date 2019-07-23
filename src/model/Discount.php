@@ -47,7 +47,7 @@ class Discount extends DataObject implements PermissionProvider
     /**
      * calculate the price reduction for this discount
      *
-     * @param Currency $value - the total/sub-total of the items this discount applies to.
+     * @param  Currency $value - the total/sub-total of the items this discount applies to.
      * @return int
      */
     public function calculateAmount(Estimate $estimate)
@@ -58,7 +58,7 @@ class Discount extends DataObject implements PermissionProvider
     /**
      * calculate the value of a discount using an AppliedDiscount item.
      *
-     * @param AppliedDiscount $item
+     * @param  AppliedDiscount $item
      * @return float
      */
     public function appliedAmount(AppliedDiscount $item)

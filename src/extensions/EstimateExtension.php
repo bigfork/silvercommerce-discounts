@@ -18,7 +18,6 @@ use SilverStripe\Forms\GridField\GridFieldAddExistingAutocompleter;
 
 /**
  * Add extra fields to an estimate (to track the discount)
- * 
  */
 class EstimateExtension extends DataExtension
 {
@@ -83,7 +82,7 @@ class EstimateExtension extends DataExtension
     /**
      * update the total price with the discount reduction.
      *
-     * @param [type] $total
+     * @param  [type] $total
      * @return void
      */
     public function updateTotal(&$total) 
