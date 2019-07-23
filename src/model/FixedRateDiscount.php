@@ -5,7 +5,6 @@ namespace SilverCommerce\Discounts\Model;
 use SilverStripe\ORM\ArrayList;
 use SilverCommerce\Discounts\Model\Discount;
 use SilverCommerce\OrdersAdmin\Model\Estimate;
-use SilverCommerce\TaxAdmin\Helpers\MathsHelper;
 
 class FixedRateDiscount extends Discount
 {
@@ -33,7 +32,7 @@ class FixedRateDiscount extends Discount
             foreach ($estimate->Items() as $line_item) {
                 $match = $line_item->FindStockItem();
                 if ($all_products->find('ID', $match->ID)) {
-                    $value += ($line_item->Quantity * $line_item->Price);
+                    $value += ($line_item->Quantity * $line_item->UnitPrice);
                 }
             }
         }
