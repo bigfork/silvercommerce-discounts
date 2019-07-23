@@ -39,11 +39,12 @@ class AppliedDiscount extends DataObject
     public function updateDiscount()
     {
         $discount = $this->getDiscount();
+        if ($discount->exists()) {
+            $value = $discount->appliedAmount($this);
 
-        $value = $discount->appliedAmount($this);
-
-        $this->Value = $value;
-        $this->write();
+            $this->Value = $value;
+            $this->write();
+        }
     }
 
     public function getDiscount()
