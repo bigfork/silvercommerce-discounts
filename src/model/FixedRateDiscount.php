@@ -20,7 +20,7 @@ class FixedRateDiscount extends Discount
     {
         $cats = $this->Categories();
         $all_products = ArrayList::create();
-        $value = $estimate->getTotal();
+        $value = $estimate->getSubTotal();
         $min = (float) $this->MinOrder;
 
         if ($cats->count() > 0) {
