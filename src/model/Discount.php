@@ -44,6 +44,21 @@ class Discount extends DataObject implements PermissionProvider
         "Expires"
     ];
 
+    public function getCMSFields()
+    {
+        $fields = parent::getCMSFields();
+
+        $min = $fields->dataFieldByName("MinOrder");
+
+        if ($min) {
+            $min->setDescription(
+                _t(self::class.".MinOrderPreTax","This is the SubTotal of an order EXCLUDING vat and tax")
+            );
+        }
+
+        return $fields;
+    }
+
     /**
      * calculate the price reduction for this discount
      *
