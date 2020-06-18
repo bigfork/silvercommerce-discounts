@@ -37,11 +37,20 @@ class Discount extends DataObject implements PermissionProvider
         "Categories" => CatalogueCategory::class
     ];
 
+    private static $casting = [
+        'I18nType'
+    ];
+
     private static $summary_fields = [
+        'I18nType',
         "Title",
         "Code",
         "Starts",
         "Expires"
+    ];
+
+    private static $field_labels = [
+        'I18nType' => 'Type'
     ];
 
     public function getCMSFields()
@@ -57,6 +66,16 @@ class Discount extends DataObject implements PermissionProvider
         }
 
         return $fields;
+    }
+
+    /**
+     * Generate a translated type of this discount (based on it's classname)
+     *
+     * @return string
+     */
+    public function getI18nType()
+    {
+        return $this->i18n_singular_name();
     }
 
     /**
