@@ -57,22 +57,24 @@ class Discount extends DataObject implements PermissionProvider
     {
         $self = $this;
 
-        $this->beforeUpdateCMSFields(function ($fields) use ($self) {
-            // Add i18n type field to field list
-            $fields->addFieldToTab(
-                'Root.Main',
-                ReadonlyField::create('I18nType', $this->fieldLabel('I18nType')),
-                'Title'
-            );
-
-            $min = $fields->dataFieldByName("MinOrder");
-
-            if ($min) {
-                $min->setDescription(
-                    _t(self::class.".MinOrderPreTax","This is the SubTotal of an order EXCLUDING vat and tax")
+        $this->beforeUpdateCMSFields(
+            function ($fields) use ($self) {
+                // Add i18n type field to field list
+                $fields->addFieldToTab(
+                    'Root.Main',
+                    ReadonlyField::create('I18nType', $this->fieldLabel('I18nType')),
+                    'Title'
                 );
+
+                $min = $fields->dataFieldByName("MinOrder");
+
+                if ($min) {
+                    $min->setDescription(
+                        _t(self::class.".MinOrderPreTax", "This is the SubTotal of an order EXCLUDING vat and tax")
+                    );
+                }
             }
-        });
+        );
 
         return parent::getCMSFields();
     }
