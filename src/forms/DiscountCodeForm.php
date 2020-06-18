@@ -106,5 +106,4 @@ class DiscountCodeForm extends Form
         
         return $this->getRequestHandler()->redirectBack();
     }
-    
 }

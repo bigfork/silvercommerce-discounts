@@ -52,7 +52,6 @@ class FixedRateDiscount extends Discount
 
     public function appliedAmount(AppliedDiscount $item)
     {
-        return $this->calculateAmount($item->Estimate());        
+        return $this->calculateAmount($item->Estimate());
     }
-
 }

@@ -54,5 +54,4 @@ class FreePostageDiscount extends Discount
     {
         return $this->calculateAmount($item->Estimate());
     }
-
 }

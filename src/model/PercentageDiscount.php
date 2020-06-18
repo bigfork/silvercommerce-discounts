@@ -19,7 +19,7 @@ class PercentageDiscount extends Discount
 
     public function appliedAmount(AppliedDiscount $item)
     {
-        return $this->calculateAmount($item->Estimate());        
+        return $this->calculateAmount($item->Estimate());
     }
 
     public function calculateAmount(Estimate $estimate)

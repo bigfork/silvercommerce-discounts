@@ -108,7 +108,7 @@ class Discount extends DataObject implements PermissionProvider
      */
     public function appliedAmount(AppliedDiscount $item)
     {
-        return 0;        
+        return 0;
     }
 
     public function applyDiscount($estimate, $code = null)

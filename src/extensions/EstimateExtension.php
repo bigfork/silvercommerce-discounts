@@ -32,7 +32,7 @@ class EstimateExtension extends DataExtension
 
     /**
      * Find the specific discount object for this order
-     * 
+     *
      * @return Discount
      */
     public function findDiscount($code)
@@ -85,14 +85,14 @@ class EstimateExtension extends DataExtension
      * @param  [type] $total
      * @return void
      */
-    public function updateTotal(&$total) 
+    public function updateTotal(&$total)
     {
         $total -= $this->owner->getDiscountTotal();
     }
 
     /**
      * Add discount info to an estimate
-     * 
+     *
      * @param FieldList $fields Current field list
      */
     public function updateCMSFields(FieldList $fields)
@@ -143,7 +143,6 @@ class EstimateExtension extends DataExtension
                 $discount_code
             );
         }
-        
     }
 
     /**
@@ -151,10 +150,10 @@ class EstimateExtension extends DataExtension
      *
      * @return void
      */
-    public function onAfterWrite() 
+    public function onAfterWrite()
     {
         if ($this->owner->Discounts()->exists() && (!method_exists($this->owner, 'isPaid') || !$this->owner->isPaid())) {
             $this->recalculateDiscounts();
-        } 
+        }
     }
 }

@@ -33,7 +33,7 @@ class AppliedDiscount extends DataObject
 
     public function appliedAmount(AppliedDiscount $item)
     {
-        return $this->calculateValue($item->Estimate()->getTotal());        
+        return $this->calculateValue($item->Estimate()->getTotal());
     }
 
     public function updateDiscount()

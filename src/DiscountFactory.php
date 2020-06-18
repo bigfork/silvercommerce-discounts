@@ -23,7 +23,7 @@ class DiscountFactory
 
     /**
      * Find a discount by the prodvided code.
-     * 
+     *
      * @param string  $code       A discount code to find
      * @param boolean $only_valid Only find valid codes
      */
@@ -66,7 +66,7 @@ class DiscountFactory
     /**
      * Get a list of discounts that are valid (not expired and have passed their
      * start date).
-     * 
+     *
      * @return SSList
      */
     public static function getValid()
@@ -106,15 +106,14 @@ class DiscountFactory
         $discount = $this->getByIdent($code);
         
         if (!$discount) {
-
         }
         
-        $discount->applyDiscount($estimate, $code);        
+        $discount->applyDiscount($estimate, $code);
     }
 
     /**
      * Get a list of valid discounts as an array
-     * 
+     *
      * @return array
      */
     public static function getValidArray()
