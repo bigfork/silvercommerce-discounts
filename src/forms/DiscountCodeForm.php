@@ -2,6 +2,7 @@
 
 namespace SilverCommerce\Discounts\Forms;
 
+use Exception;
 use SilverStripe\Forms\Form;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\TextField;
@@ -80,30 +81,14 @@ class DiscountCodeForm extends Form
      */
     public function doAddDiscount($data, $form)
     {
-        $code_to_search = $data['DiscountCode'];
-        $cart = ShoppingCartFactory::create();
-        $existing = $cart->getOrder()->Discounts();
-        $limit = Config::inst()->get(ShoppingCartFactory::class, 'discount_limit');
-
-        if ($limit && $existing->exists() && $existing->count() >= $limit) {
-            $form->sessionMessage("Only ".$limit." discount code(s) can be used at a time.", 'bad');
-            return $this->getRequestHandler()->redirectBack();
-        }
-
-        $discount = DiscountFactory::create()->getByIdent($code_to_search);
-        
-        if (!$discount) {
-            $form->sessionMessage("The entered code is invalid.", 'bad');
-        } else {
+        try {
+            $code_to_search = $data['DiscountCode'];
             $estimate = $this->getEstimate();
-            // First check if the discount is already added (so we don't
-            // query the DB if we don't have to).
-            if (!$estimate->findDiscount($code_to_search)) {
-                DiscountFactory::create()->generateAppliedDiscount($code_to_search, $estimate);
-                $cart->save();
-            }
+            DiscountFactory::create($code_to_search, $estimate)->applyDiscountToEstimate();
+        } catch (Exception $e) {
+            $form->sessionMessage($e->getMessage(), 'bad');
         }
-        
+
         return $this->getRequestHandler()->redirectBack();
     }
 }

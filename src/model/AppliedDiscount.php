@@ -7,6 +7,10 @@ use SilverCommerce\Discounts\DiscountFactory;
 use SilverCommerce\OrdersAdmin\Model\Estimate;
 use SilverCommerce\OrdersAdmin\Model\LineItem;
 
+/**
+ * A discount that has been applied to an Estimate/Invoice
+ * and/or LineItems
+ */
 class AppliedDiscount extends DataObject
 {
     private static $table_name = 'AppliedDiscount';
@@ -49,6 +53,6 @@ class AppliedDiscount extends DataObject
 
     public function getDiscount()
     {
-        return DiscountFactory::create()->getByIdent($this->Code);
+        return DiscountFactory::create($this->Code)->getDiscount(false);
     }
 }
