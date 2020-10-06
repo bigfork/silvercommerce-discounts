@@ -2,27 +2,48 @@
 
 namespace SilverCommerce\Discounts\Model;
 
-use SilverStripe\Core\Convert;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\Security\Group;
 use SilverStripe\Security\Security;
-use SilverStripe\Control\Controller;
 use SilverStripe\Forms\ReadonlyField;
 use SilverStripe\Security\Permission;
 use SilverStripe\SiteConfig\SiteConfig;
+use SilverStripe\Forms\GridField\GridField;
 use SilverStripe\Security\PermissionProvider;
 use SilverCommerce\OrdersAdmin\Model\Estimate;
-use SilverCommerce\TaxAdmin\Helpers\MathsHelper;
+use SilverCommerce\Discounts\Model\DiscountCode;
+use SilverStripe\Forms\GridField\GridFieldConfig;
 use SilverCommerce\Discounts\Model\AppliedDiscount;
+use SilverStripe\Forms\GridField\GridFieldButtonRow;
+use Symbiote\GridFieldExtensions\GridFieldTitleHeader;
+use SilverStripe\Forms\GridField\GridFieldDeleteAction;
+use SilverStripe\Forms\GridField\GridFieldToolbarHeader;
 use SilverCommerce\CatalogueAdmin\Model\CatalogueCategory;
+use SilverStripe\Forms\HeaderField;
+use Symbiote\GridFieldExtensions\GridFieldEditableColumns;
+use Symbiote\GridFieldExtensions\GridFieldAddNewInlineButton;
 
+/**
+ * Main class that provdies base functionality for all discounts
+ *
+ * @property string $Title
+ * @property string $Code
+ * @property float  $MinOrder
+ * @property string $Starts
+ * @property string $Expires
+ * @property string $I18nType
+ *
+ * @method SiteConfig Site Currently assigned SiteConfig
+ * @method ManyManyList Groups List of user groups discount will be applied to
+ * @method ManyManyList Categories List of Product Categories
+ */
 class Discount extends DataObject implements PermissionProvider
 {
     private static $table_name = 'Discount';
 
     private static $db = [
         "Title"     => "Varchar",
-        "Code"      => "Varchar(99)",
+        "Code"      => "Varchar(99)", // retaained for legacy support/migration
         "MinOrder"  => "Decimal",
         "Starts"    => "Date",
         "Expires"   => "Date"
@@ -30,6 +51,10 @@ class Discount extends DataObject implements PermissionProvider
 
     private static $has_one = [
         "Site"      => SiteConfig::class
+    ];
+
+    private static $has_many = [
+        'Codes' => DiscountCode::class
     ];
 
     private static $many_many = [
@@ -59,6 +84,9 @@ class Discount extends DataObject implements PermissionProvider
 
         $this->beforeUpdateCMSFields(
             function ($fields) use ($self) {
+                // Hide legacy code field
+                $fields->removeByName('Code');
+
                 // Add i18n type field to field list
                 $fields->addFieldToTab(
                     'Root.Main',
@@ -72,6 +100,32 @@ class Discount extends DataObject implements PermissionProvider
                     $min->setDescription(
                         _t(self::class.".MinOrderPreTax", "This is the SubTotal of an order EXCLUDING vat and tax")
                     );
+                }
+
+                // Add inline edit field for codes
+                if ($this->isInDB()) {
+                    $fields->removeByName('Codes');
+
+                    $fields->addFieldToTab(
+                        'Root.Main',
+                        HeaderField::create(_t(__CLASS__ . '.CodesTitle', 'Codes (leave blank and save to auto generate)')),
+                        'Codes'
+                    );
+
+                    $codes_field = GridField::create(
+                        'Codes',
+                        '',
+                        $this->Codes(),
+                        GridFieldConfig::create()
+                            ->addComponent(new GridFieldButtonRow('before'))
+                            ->addComponent(new GridFieldToolbarHeader())
+                            ->addComponent(new GridFieldTitleHeader())
+                            ->addComponent(new GridFieldEditableColumns())
+                            ->addComponent(new GridFieldDeleteAction())
+                            ->addComponent(new GridFieldAddNewInlineButton())
+                    );
+
+                    $fields->addFieldToTab('Root.Main', $codes_field);
                 }
             }
         );
@@ -109,52 +163,6 @@ class Discount extends DataObject implements PermissionProvider
     public function appliedAmount(AppliedDiscount $item)
     {
         return 0;
-    }
-
-    public function applyDiscount($estimate, $code = null)
-    {
-        $applied = AppliedDiscount::create();
-        $applied->Code = $this->Code;
-        $applied->Title = $this->Title;
-        $applied->Value = $this->calculateAmount($estimate);
-        $applied->EstimateID = $estimate->ID;
-
-        $applied->write();
-
-        $estimate->Discounts()->add($applied);
-    }
-
-    /**
-     * Generate a random string that we can use for the code by default
-     *
-     * @return string
-     */
-    protected static function generateRandomString($length = 10)
-    {
-        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        $string = '';
-
-        for ($i = 0; $i < $length; $i++) {
-            $string .= $characters[rand(0, strlen($characters) - 1)];
-        }
-
-        return $string;
-    }
-
-    /**
-     * Set more complex default data
-     */
-    public function populateDefaults()
-    {
-        $this->setField('Code', self::generateRandomString());
-    }
-
-    public function onBeforeWrite()
-    {
-        parent::onBeforeWrite();
-
-        // Ensure that the code is URL safe
-        $this->Code = Convert::raw2url($this->Code);
     }
 
     public function canView($member = null, $context = [])
@@ -226,8 +234,6 @@ class Discount extends DataObject implements PermissionProvider
 
         return false;
     }
-
-
 
     public function providePermissions()
     {
