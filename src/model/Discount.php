@@ -69,7 +69,6 @@ class Discount extends DataObject implements PermissionProvider
     private static $summary_fields = [
         'I18nType',
         "Title",
-        "Code",
         "Starts",
         "Expires"
     ];
