@@ -1,20 +1,17 @@
 SilverStripe\SiteConfig\SiteConfig:
   default:
     Title: "Test SiteConfig"
-SilverCommerce\Discounts\Model\Discount:
+SilverCommerce\Discounts\Model\PercentageDiscount:
   10-percent:
     Title: "10% Discount"
-    Type: "Percentage"
-    Code: "10percent"
     Amount: 10
     MinOrder: 0
     Starts: "2018-02-01"
     Expires: "2018-07-01"
     Site: =>SilverStripe\SiteConfig\SiteConfig.default
+SilverCommerce\Discounts\Model\FixedRateDiscount:
   20-pound:
     Title: "£20 Discount"
-    Type: "Fixed"
-    Code: "20pound"
     Amount: 20
     MinOrder: 0
     Starts: "2018-02-01"
@@ -23,7 +20,6 @@ SilverCommerce\Discounts\Model\Discount:
   10-pound-min-order:
     Title: "£10 Discount"
     Type: "Fixed"
-    Code: "10pound"
     Amount: 10
     MinOrder: 20
     Starts: "2018-02-01"
@@ -38,3 +34,56 @@ SilverCommerce\Discounts\Model\Discount:
     Starts: "2018-01-01"
     Expires: "2018-01-15"
     Site: =>SilverStripe\SiteConfig\SiteConfig.default
+SilverCommerce\Discounts\Model\DiscountCode:
+  tenpercentmulti:
+    Code: "10percent"
+    SingleUse: false
+    Discount: =>SilverCommerce\Discounts\Model\PercentageDiscount.10-percent
+  tenpercentsingle:
+    Code: "10percentsingle"
+    SingleUse: true
+    Discount: =>SilverCommerce\Discounts\Model\PercentageDiscount.10-percent
+  twentypoundmulti:
+    Code: "20pound"
+    SingleUse: false
+    Discount: =>SilverCommerce\Discounts\Model\FixedRateDiscount.20-pound
+  twentypoundsingle:
+    Code: "20poundsingle"
+    SingleUse: true
+    Discount: =>SilverCommerce\Discounts\Model\FixedRateDiscount.20-pound
+  twentypoundmulti:
+    Code: "10pound"
+    SingleUse: false
+    Discount: =>SilverCommerce\Discounts\Model\FixedRateDiscount.10-pound-min-order
+  twentypoundsingle:
+    Code: "10poundsingle"
+    SingleUse: true
+    Discount: =>SilverCommerce\Discounts\Model\FixedRateDiscount.10-pound-min-order
+SilverCommerce\TaxAdmin\Model\TaxRate:
+  vat:
+    ID: 1
+    Title: "VAT"
+    Rate: 20
+SilverCommerce\OrdersAdmin\Model\LineItem:
+  itemone:
+    Title: "Item One"
+    Quantity: 1
+    BasePrice: 2.99
+    TaxRate: =>SilverCommerce\TaxAdmin\Model\TaxRate.vat
+  itemtwo:
+    Title: "Item Two"
+    Quantity: 1
+    BasePrice: 4.99
+    TaxRate: =>SilverCommerce\TaxAdmin\Model\TaxRate.vat
+  itemthree:
+    Title: "Item Three"
+    Quantity: 2
+    BasePrice: 5.99
+    TaxRate: =>SilverCommerce\TaxAdmin\Model\TaxRate.vat
+SilverCommerce\OrdersAdmin\Model\Estimate:
+  estimateone:
+    Ref: 1231
+    Items:
+      - =>SilverCommerce\OrdersAdmin\Model\LineItem.itemone
+      - =>SilverCommerce\OrdersAdmin\Model\LineItem.itemtwo
+      - =>SilverCommerce\OrdersAdmin\Model\LineItem.itemthree

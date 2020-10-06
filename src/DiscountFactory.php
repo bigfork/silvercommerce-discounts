@@ -3,60 +3,92 @@
 namespace SilverCommerce\Discounts;
 
 use DateTime;
+use LogicException;
 use SilverStripe\ORM\DB;
+use SilverStripe\Core\Config\Config;
 use SilverStripe\SiteConfig\SiteConfig;
-use SilverStripe\Subsites\Model\Subsite;
 use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Core\Injector\Injectable;
 use SilverStripe\ORM\FieldType\DBDatetime;
 use SilverCommerce\Discounts\Model\Discount;
+use SilverCommerce\OrdersAdmin\Model\Estimate;
+use SilverCommerce\Discounts\Model\AppliedDiscount;
 
 /**
  * Simple factroy to handle getting discounts (either by code or valid)
  */
 class DiscountFactory
 {
-
     use Injectable;
 
     use Configurable;
 
     /**
+     * Allow the number of discounts  applied to an estimate to be limited
+     * 
+     * Defaults to 1, 0 = unlimited
+     *
+     * @var int
+     */
+    private static $discount_limit = 1;
+
+    /**
+     * Discount code that we are working with
+     *
+     * @var string
+     */
+    protected $code;
+
+    /**
+     * The estimate/invoice to apply a discount to
+     *
+     * @var Estimate
+     */
+    protected $estimate;
+
+    public function __construct($code, Estimate $estimate = null)
+    {
+        $this->setCode($code);
+
+        if (!empty($estimate)) {
+            $this->setEstimate($estimate);
+        }
+    }
+
+    /**
      * Find a discount by the prodvided code.
      *
-     * @param string  $code       A discount code to find
      * @param boolean $only_valid Only find valid codes
+     *
+     * @throws LogicException
+     *
+     * @return Discount|null
      */
-    public function getByIdent($ident, $only_valid = true)
+    public function getDiscount($only_valid = true)
     {
-            $siteconfig = SiteConfig::current_site_config();
-            
-            $discount = Discount::get()->filter(
-                [
-                    "Code" => $ident,
-                    'SiteID' => $siteconfig->ID
-                ]
-            )->first();
+        $siteconfig = SiteConfig::current_site_config();
+        $code = $this->getCode();
 
-        // Check if this discount is valid
-        if ($discount && $only_valid) {
-            // Set the current date to now using DBDateTime
-            // for unit testing support
-            $now = new DateTime(
-                DBDatetime::now()->format(DBDatetime::ISO_DATETIME)
-            );
+        if (empty($code)) {
+            throw new LogicException('You must set a code on DiscountFactory');
+        }
 
-            $starts = new DateTime($discount->Starts);
-            $expires = new DateTime($discount->Expires);
+        if ($only_valid) {
+            $discounts = self::getValid();
+        } else {
+            $discounts = Discount::get();
+        }
 
-            // If in the future, invalid
-            if ($now > $expires) {
-                $discount = null;
-            }
+        $discount = $discounts->filter([
+            "Codes.Code" => $code,
+            'SiteID' => $siteconfig->ID
+        ])->first();
 
-            // If in the past, invalid
-            if ($now < $starts) {
-                $discount = null;
+        // If there is a discount, but it is single use and reached its limit, return nothing
+        if (!empty($discount) && $only_valid) {
+            $code = $discount->Codes()->find('Code', $code);
+            if ($code->SingleUse && $code->Uses > 0) {
+                return;
             }
         }
 
@@ -67,12 +99,33 @@ class DiscountFactory
      * Get a list of discounts that are valid (not expired and have passed their
      * start date).
      *
-     * @return SSList
+     * @return \SilverStripe\ORM\DataList
      */
     public static function getValid()
     {
         $config = SiteConfig::current_site_config();
-        $list = $config->Discounts();
+        $where = self::getDateFilter();
+
+        return $config->Discounts()->where($where);
+    }
+
+    /**
+     * Get a list of valid discounts as an array
+     *
+     * @return array
+     */
+    public static function getValidArray()
+    {
+        return self::getValid()->toArray();
+    }
+
+    /**
+     * Get a date filter to be used by data queries
+     *
+     * @return array
+     */
+    protected static function getDateFilter()
+    {
         $db = DB::get_conn();
         // Set the current date to now using DBDateTime
         // for unit testing support
@@ -91,33 +144,108 @@ class DiscountFactory
         );
 
         $now = $start->format("Y-m-d");
-        $list = $list->where(
-            [
-                $start_field . ' <= ?' => $now,
-                $end_field . ' >= ?' => $now
-            ]
-        );
 
-        return $list;
-    }
-
-    public function generateAppliedDiscount($code, $estimate)
-    {
-        $discount = $this->getByIdent($code);
-        
-        if (!$discount) {
-        }
-        
-        $discount->applyDiscount($estimate, $code);
+        return [
+            $start_field . ' <= ?' => $now,
+            $end_field . ' >= ?' => $now
+        ];
     }
 
     /**
-     * Get a list of valid discounts as an array
+     * Apply the selected discount to the provided estimate (performing various checks, such
+     * as discount limit, duplicate checks, etc)
      *
-     * @return array
+     * @param bool $only_valid Only apply discount if valid
+     *
+     * @throws LogicException
+     *
+     * @return self
      */
-    public static function getValidArray()
+    public function applyDiscountToEstimate(bool $only_valid = true)
     {
-        return self::getValid()->toArray();
+        $limit = Config::inst()->get(self::class, 'discount_limit');
+        $code = $this->getCode();
+        $discount = $this->getDiscount($only_valid);
+        $estimate = $this->getEstimate();
+
+        if (empty($discount)) {
+            throw new LogicException(_t(__CLASS__ . '.InvalidDiscount', 'Invalid discount code'));
+        }
+
+        if (empty($estimate)) {
+            throw new LogicException(_t(__CLASS__ . '.InvalidEstimate', 'No estimate, or invalid estimate provided'));
+        }
+
+        if ($estimate->findDiscount($code)) {
+            throw new LogicException(_t(__CLASS__ . '.DiscountAlreadySet', 'Cannot apply discount more than once'));
+        }
+
+        if ($limit > 0 && $estimate->Discounts()->count() >= $limit) {
+            throw new LogicException(_t(
+                __CLASS__ . '.DiscountLimitReached',
+                'Only {limit} discounts can be applied at this time',
+                ['limit' => $limit]
+            ));
+        }
+
+        $applied = AppliedDiscount::create();
+        $applied->Code = $code;
+        $applied->Title = $discount->Title;
+        $applied->Value = $discount->calculateAmount($estimate);
+        $applied->EstimateID = $estimate->ID;
+        $applied->write();
+
+        $estimate->Discounts()->add($applied);
+        $estimate->recalculateDiscounts();
+
+        return $this;
+    }
+
+    /**
+     * Get discount code that we are working with
+     *
+     * @return string
+     */ 
+    public function getCode()
+    {
+        return $this->code;
+    }
+
+    /**
+     * Set discount code that we are working with
+     *
+     * @param string $code
+     *
+     * @return self
+     */ 
+    public function setCode(string $code)
+    {
+        $this->code = $code;
+
+        return $this;
+    }
+
+    /**
+     * Get the estimate/invoice to apply a discount to
+     *
+     * @return  Estimate
+     */ 
+    public function getEstimate()
+    {
+        return $this->estimate;
+    }
+
+    /**
+     * Set the estimate/invoice to apply a discount to
+     *
+     * @param Estimate $estimate
+     *
+     * @return self
+     */ 
+    public function setEstimate(Estimate $estimate)
+    {
+        $this->estimate = $estimate;
+
+        return $this;
     }
 }
