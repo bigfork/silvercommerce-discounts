@@ -63,18 +63,21 @@ class Discount extends DataObject implements PermissionProvider
     ];
 
     private static $casting = [
-        'I18nType'
+        'I18nType',
+        'CodesList'
     ];
 
     private static $summary_fields = [
         'I18nType',
         "Title",
+        "CodesList",
         "Starts",
         "Expires"
     ];
 
     private static $field_labels = [
-        'I18nType' => 'Type'
+        'I18nType' => 'Type',
+        'CodesList' => 'Codes'
     ];
 
     public function getCMSFields()
@@ -140,6 +143,16 @@ class Discount extends DataObject implements PermissionProvider
     public function getI18nType()
     {
         return $this->i18n_singular_name();
+    }
+
+    /**
+     * Get a list of codes (seperated by a ',')
+     *
+     * @return string
+     */
+    public function getCodesList()
+    {
+        return implode(', ', $this->Codes()->column('Code'));
     }
 
     /**
