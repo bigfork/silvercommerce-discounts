@@ -28,7 +28,8 @@
       "require": {
           "silverstripe/framework": "~4.0",
           "silvercommerce/settings": "~1.0",
-          "silvercommerce/orders-admin": "~1.0"
+          "silvercommerce/orders-admin": "~1.0",
+          "symbiote/silverstripe-gridfieldextensions": "^3.2"
       },
       "require-dev": {
           "silvercommerce/catalogue-admin": "^1.0",
