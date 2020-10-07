@@ -15,6 +15,8 @@ use SilverCommerce\Discounts\Model\AppliedDiscount;
 use SilverStripe\Forms\GridField\GridFieldConfig_RecordEditor;
 use SilverStripe\Forms\GridField\GridFieldDeleteAction;
 use SilverStripe\Forms\GridField\GridFieldAddExistingAutocompleter;
+use SilverStripe\Forms\ReadonlyField;
+use SilverStripe\ORM\FieldType\DBCurrency;
 
 /**
  * Add extra fields to an estimate (to track the discount)
@@ -28,6 +30,10 @@ class EstimateExtension extends DataExtension
     private static $casting = [
         'DiscountDetails'   => 'Varchar',
         'DiscountTotal'   => 'Currency'
+    ];
+
+    private static $field_labels = [
+        'DiscountTotalValue' => 'Total Discount'
     ];
 
     /**
@@ -54,7 +60,7 @@ class EstimateExtension extends DataExtension
     {
         if ($this->owner->Discounts()->Count() > 0) {
             foreach ($this->owner->Discounts() as $discount) {
-                $discount->Value = $discount->updateDiscount();
+                $discount->updateDiscount();
             }
         }
     }
@@ -97,15 +103,10 @@ class EstimateExtension extends DataExtension
      */
     public function updateCMSFields(FieldList $fields)
     {
-        $main = $fields->findOrMakeTab("Root.Main");
-        $statuses = $this->owner->config()->get("statuses");
-        $details = null;
-        $totals = null;
-        $misc = null;
         $discounts = $fields->dataFieldByName('Discounts');
 
         // Switch unlink action to delete
-        if ($discounts) {
+        if (!empty($discounts)) {
             $discounts
                 ->getConfig()
                 ->removeComponentsByType(GridFieldDeleteAction::class)
@@ -113,36 +114,12 @@ class EstimateExtension extends DataExtension
                 ->addComponent(new GridFieldDeleteAction());
         }
 
-        $discount_code = $fields->dataFieldByName('DiscountCode');
-        $discount_amount = $fields->dataFieldByName('DiscountTotal');
-
-        // Manually loop through fields to find info composite field, as
-        // fieldByName cannot reliably find this.
-        foreach ($main->getChildren() as $field) {
-            if ($field->getName() == "OrdersDetails") {
-                foreach ($field->getChildren() as $field) {
-                    if ($field->getName() == "OrdersDetailsTotals") {
-                        $totals = $field;
-                    }
-                    if ($field->getName() == "OrdersDetailsMisc") {
-                        $misc = $field;
-                    }
-                }
-            }
-        }
-
-        if ($totals && $discount_amount) {
-            $totals->insertBefore(
-                "TotalValue",
-                $discount_amount
-            );
-        }
-
-        if ($misc && $discount_code) {
-            $misc->push(
-                $discount_code
-            );
-        }
+        $fields->addFieldToTab(
+            'Root.Main.OrdersDetails.OrdersDetailsTotals',
+            ReadonlyField::create('DiscountTotalValue', $this->getOwner()->fieldLabel('DiscountTotalValue'))
+                ->setValue($this->getOwner()->obj('DiscountTotal')->Nice()),
+            'TotalValue'
+        );
     }
 
     /**
