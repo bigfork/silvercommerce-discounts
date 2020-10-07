@@ -5,7 +5,10 @@ namespace SilverCommerce\Discounts\Model;
 use SilverStripe\Core\Convert;
 use SilverStripe\ORM\ArrayList;
 use SilverStripe\ORM\DataObject;
+use SilverStripe\Control\HTTPRequest;
+use SilverStripe\Core\Injector\Injector;
 use SilverCommerce\Discounts\DiscountFactory;
+use SilverCommerce\OrdersAdmin\Tasks\MigrateDiscountCodesTask;
 
 /**
  * Represents a single code (either single of multi use) that is assigned to a discount
@@ -40,6 +43,18 @@ class DiscountCode extends DataObject
         'AllowedUses',
         'Uses'
     ];
+
+    public function requireDefaultRecords()
+    {
+        parent::requireDefaultRecords();
+
+        $run_migration = MigrateDiscountCodesTask::config()->run_during_dev_build;
+
+        if ($run_migration) {
+            $request = Injector::inst()->get(HTTPRequest::class);
+            MigrateDiscountCodesTask::create()->run($request);
+        }
+    }
 
     /**
      * Return a list of codes that are currently valid (currently active and not exceeded usage limit)
