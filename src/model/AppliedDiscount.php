@@ -87,6 +87,7 @@ class AppliedDiscount extends DataObject
                     'Code',
                     DropdownField::create('Code', $this->fieldLabel('Code'))
                         ->setSource($codes->map('Code', 'Title'))
+                        ->setEmptyString(_t(__CLASS__ . ".SelectExistingDiscount", "Select an existing Discount"))
                 );
             }
         });
