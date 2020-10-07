@@ -111,10 +111,28 @@ class DiscountCode extends DataObject
 
         if (empty($this->Code)) {
             $this->Code = self::generateRandomString();
+            
+            while (!$this->validCode()) {
+                $this->AccessKey = self::generateRandomString();
+            }
         }
 
         // Ensure that the code is URL safe
         $this->Code = Convert::raw2url($this->Code);
+    }
+
+    /**
+     * Check if the current code is valid (exists on another object)
+     *
+     * @return boolean
+     */
+    protected function validCode()
+    {
+        $existing = self::get()
+            ->filter("Code", $this->Code)
+            ->first();
+        
+        return !($existing);
     }
 
     /**
