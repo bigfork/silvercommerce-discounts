@@ -31,7 +31,7 @@ class FixedRateDiscount extends Discount
 
             foreach ($estimate->Items() as $line_item) {
                 $match = $line_item->FindStockItem();
-                if ($all_products->find('ID', $match->ID)) {
+                if (!empty($match) && $all_products->find('ID', $match->ID)) {
                     $value += ($line_item->Quantity * $line_item->UnitPrice);
                 }
             }
