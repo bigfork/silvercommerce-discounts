@@ -20,7 +20,8 @@ class DiscountCode extends DataObject
 {
     private static $db = [
         'Code' => 'Varchar',
-        'SingleUse' => 'Boolean'
+        'LimitUse' => 'Boolean',
+        'AllowedUses' => 'Int'
     ];
 
     private static $has_one = [
@@ -35,7 +36,8 @@ class DiscountCode extends DataObject
 
     private static $summary_fields = [
         'Code',
-        'SingleUse',
+        'LimitUse',
+        'AllowedUses',
         'Uses'
     ];
 
@@ -75,13 +77,13 @@ class DiscountCode extends DataObject
     }
 
     /**
-     * Has this code exceeded it's allowed usage?
+     * Has this code reached or exceeded it's allowed usage?
      *
      * @return boolean
      */
-    public function getExceededAllowed()
+    public function getReachedAllowed()
     {
-        if ($this->SingleUse && $this->Uses > 0) {
+        if ($this->LimitUse && $this->Uses >= $this->AllowedUses) {
             return true;
         }
 

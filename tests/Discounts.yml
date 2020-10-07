@@ -37,27 +37,30 @@ SilverCommerce\Discounts\Model\FixedRateDiscount:
 SilverCommerce\Discounts\Model\DiscountCode:
   tenpercentmulti:
     Code: "10percent"
-    SingleUse: false
+    LimitUse: false
     Discount: =>SilverCommerce\Discounts\Model\PercentageDiscount.10-percent
   tenpercentsingle:
     Code: "10percentsingle"
-    SingleUse: true
+    LimitUse: true
+    AllowedUses: 1
     Discount: =>SilverCommerce\Discounts\Model\PercentageDiscount.10-percent
   twentypoundmulti:
     Code: "20pound"
-    SingleUse: false
+    LimitUse: false
     Discount: =>SilverCommerce\Discounts\Model\FixedRateDiscount.20-pound
   twentypoundsingle:
     Code: "20poundsingle"
-    SingleUse: true
+    LimitUse: true
+    AllowedUses: 1
     Discount: =>SilverCommerce\Discounts\Model\FixedRateDiscount.20-pound
   twentypoundmulti:
     Code: "10pound"
-    SingleUse: false
+    LimitUse: false
     Discount: =>SilverCommerce\Discounts\Model\FixedRateDiscount.10-pound-min-order
   twentypoundsingle:
     Code: "10poundsingle"
-    SingleUse: true
+    LimitUse: true
+    AllowedUses: 1
     Discount: =>SilverCommerce\Discounts\Model\FixedRateDiscount.10-pound-min-order
 SilverCommerce\TaxAdmin\Model\TaxRate:
   vat:
