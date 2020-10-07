@@ -3,7 +3,9 @@
 namespace SilverCommerce\Discounts\Model;
 
 use SilverStripe\Core\Convert;
+use SilverStripe\ORM\ArrayList;
 use SilverStripe\ORM\DataObject;
+use SilverCommerce\Discounts\DiscountFactory;
 
 /**
  * Represents a single code (either single of multi use) that is assigned to a discount
@@ -26,7 +28,9 @@ class DiscountCode extends DataObject
     ];
 
     private static $casting = [
-        'Uses' => 'Int'
+        'Title' => 'Varchar',
+        'Uses' => 'Int',
+        'ExceededAllowed' => 'Boolean'
     ];
 
     private static $summary_fields = [
@@ -36,6 +40,31 @@ class DiscountCode extends DataObject
     ];
 
     /**
+     * Return a list of codes that are currently valid (currently active and not exceeded usage limit)
+     *
+     * @return \SilverStripe\ORM\DataList
+     */
+    public static function getValidCodes()
+    {
+        $discounts = DiscountFactory::getValid();
+
+        if (!$discounts->exists()) {
+            return ArrayList::create();
+        }
+
+        // compile a list of valid codes
+        return self::get()
+            ->filter('ID', $discounts->column('ID'))
+            ->filterByCallback(function($item, $list) {
+                return !($item->ExceededAllowed);
+            });
+    }
+
+    public function getTitle() {
+        return $this->Discount()->Title;
+    }
+
+    /**
      * Find the number of times this code has been used
      *
      * @return int 
@@ -43,6 +72,20 @@ class DiscountCode extends DataObject
     public function getUses()
     {
         return AppliedDiscount::get()->filter('Code', $this->Code)->count();
+    }
+
+    /**
+     * Has this code exceeded it's allowed usage?
+     *
+     * @return boolean
+     */
+    public function getExceededAllowed()
+    {
+        if ($this->SingleUse && $this->Uses > 0) {
+            return true;
+        }
+
+        return false;
     }
 
     public function onBeforeWrite()

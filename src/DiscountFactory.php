@@ -87,7 +87,7 @@ class DiscountFactory
         // If there is a discount, but it is single use and reached its limit, return nothing
         if (!empty($discount) && $only_valid) {
             $code = $discount->Codes()->find('Code', $code);
-            if ($code->SingleUse && $code->Uses > 0) {
+            if ($code->getExceededAllowed()) {
                 return;
             }
         }
