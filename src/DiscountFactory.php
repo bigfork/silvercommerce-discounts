@@ -12,6 +12,7 @@ use SilverStripe\Core\Injector\Injectable;
 use SilverStripe\ORM\FieldType\DBDatetime;
 use SilverCommerce\Discounts\Model\Discount;
 use SilverCommerce\OrdersAdmin\Model\Estimate;
+use SilverCommerce\Discounts\Model\DiscountCode;
 use SilverCommerce\Discounts\Model\AppliedDiscount;
 
 /**
@@ -86,8 +87,9 @@ class DiscountFactory
 
         // If there is a discount, but it is single use and reached its limit, return nothing
         if (!empty($discount) && $only_valid) {
+            /** @var DiscountCode */
             $code = $discount->Codes()->find('Code', $code);
-            if ($code->getExceededAllowed()) {
+            if ($code->getReachedAllowed()) {
                 return;
             }
         }
