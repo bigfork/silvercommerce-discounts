@@ -1,5 +1,6 @@
 ---
 Name: silvercommercediscountsconfig
+After: '#orderadminconfig'
 ---
 # Update DB Fields
 SilverStripe\Security\Group:
