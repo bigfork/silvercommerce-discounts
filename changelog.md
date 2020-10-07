@@ -17,6 +17,6 @@
 ## 2.0.0
 
 * Add multi-code support to discounts
-* Add single use discount codes
+* Add ability to limit uses on codes
 * Improve display of discounts in admin
-* Commenting/Documehntation improvements
+* Commenting/Documentation improvements
