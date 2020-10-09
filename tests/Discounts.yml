@@ -53,11 +53,11 @@ SilverCommerce\Discounts\Model\DiscountCode:
     LimitUse: true
     AllowedUses: 1
     Discount: =>SilverCommerce\Discounts\Model\FixedRateDiscount.20-pound
-  twentypoundmulti:
+  tenpoundmulti:
     Code: "10pound"
     LimitUse: false
     Discount: =>SilverCommerce\Discounts\Model\FixedRateDiscount.10-pound-min-order
-  twentypoundsingle:
+  tenpoundsingle:
     Code: "10poundsingle"
     LimitUse: true
     AllowedUses: 1
