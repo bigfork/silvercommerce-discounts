@@ -14,8 +14,11 @@ use SilverCommerce\OrdersAdmin\Tasks\MigrateDiscountCodesTask;
  * Represents a single code (either single of multi use) that is assigned to a discount
  *
  * @property string $Code
- * @property bool   $SingleUser
+ * @property bool   $LimitUse
+ * @property int    $AllowedUses
  * @property int    $Uses
+ * @property string $Title
+ * @property int    $ReachedAllowed
  *
  * @method Discount The assigned discount
  */
@@ -34,7 +37,7 @@ class DiscountCode extends DataObject
     private static $casting = [
         'Title' => 'Varchar',
         'Uses' => 'Int',
-        'ExceededAllowed' => 'Boolean'
+        'ReachedAllowed' => 'Boolean'
     ];
 
     private static $summary_fields = [
@@ -73,7 +76,7 @@ class DiscountCode extends DataObject
         return self::get()
             ->filter('ID', $discounts->column('ID'))
             ->filterByCallback(function($item, $list) {
-                return !($item->ExceededAllowed);
+                return !($item->ReachedAllowed);
             });
     }
 
@@ -113,7 +116,7 @@ class DiscountCode extends DataObject
             $this->Code = self::generateRandomString();
             
             while (!$this->validCode()) {
-                $this->AccessKey = self::generateRandomString();
+                $this->Code = self::generateRandomString();
             }
         }
 
