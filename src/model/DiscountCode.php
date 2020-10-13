@@ -24,6 +24,8 @@ use SilverCommerce\OrdersAdmin\Tasks\MigrateDiscountCodesTask;
  */
 class DiscountCode extends DataObject
 {
+    private static $table_name = 'DiscountCode';
+
     private static $db = [
         'Code' => 'Varchar',
         'LimitUse' => 'Boolean',
