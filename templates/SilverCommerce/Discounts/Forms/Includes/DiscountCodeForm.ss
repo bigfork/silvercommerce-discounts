@@ -7,21 +7,20 @@
 	<p id="{$FormName}_error" class="message $MessageType col-12" style="display: none"></p>
 	<% end_if %>
 
-	<fieldset>
+	<fieldset class="input-group align-items-end">
 		<% if $Legend %><legend>$Legend</legend><% end_if %>
 		<% loop $Fields %>
 			$FieldHolder
 		<% end_loop %>
-		<div class="clear"><!-- --></div>
+		<% if $Actions %>
+			<div class="input-group-append mb-3 mb-sm-0">
+				<% loop $Actions %>
+					$Field
+				<% end_loop %>
+			</div>
+		<% end_if %>
 	</fieldset>
 
-	<% if $Actions %>
-	<div class="btn-toolbar">
-		<% loop $Actions %>
-			$Field
-		<% end_loop %>
-	</div>
-	<% end_if %>
 <% if $IncludeFormTag %>
 </form>
 <% end_if %>
