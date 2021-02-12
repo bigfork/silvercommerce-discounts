@@ -46,7 +46,7 @@ class AppliedDiscount extends DataObject
      * Automatically update this discount's value based on it's estimate
      *
      * @param bool $write Should this discount be written
-     * 
+     *
      * @return self
      */
     public function updateDiscount($write = true)
@@ -97,8 +97,8 @@ class AppliedDiscount extends DataObject
 
     /**
      * If AppliedDiscount is set with code and no title/value set these up
-     * 
-     * @return null 
+     *
+     * @return null
      */
     public function onBeforeWrite()
     {

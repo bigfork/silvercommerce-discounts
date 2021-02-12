@@ -26,7 +26,7 @@ class DiscountFactory
 
     /**
      * Allow the number of discounts  applied to an estimate to be limited
-     * 
+     *
      * Defaults to 1, 0 = unlimited
      *
      * @var int
@@ -207,7 +207,7 @@ class DiscountFactory
      * Get discount code that we are working with
      *
      * @return string
-     */ 
+     */
     public function getCode()
     {
         return $this->code;
@@ -219,7 +219,7 @@ class DiscountFactory
      * @param string $code
      *
      * @return self
-     */ 
+     */
     public function setCode(string $code)
     {
         $this->code = $code;
@@ -231,7 +231,7 @@ class DiscountFactory
      * Get the estimate/invoice to apply a discount to
      *
      * @return  Estimate
-     */ 
+     */
     public function getEstimate()
     {
         return $this->estimate;
@@ -243,7 +243,7 @@ class DiscountFactory
      * @param Estimate $estimate
      *
      * @return self
-     */ 
+     */
     public function setEstimate(Estimate $estimate)
     {
         $this->estimate = $estimate;

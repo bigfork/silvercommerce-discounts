@@ -77,19 +77,20 @@ class DiscountCode extends DataObject
         // compile a list of valid codes
         return self::get()
             ->filter('ID', $discounts->column('ID'))
-            ->filterByCallback(function($item, $list) {
+            ->filterByCallback(function ($item, $list) {
                 return !($item->ReachedAllowed);
             });
     }
 
-    public function getTitle() {
+    public function getTitle()
+    {
         return $this->Discount()->Title;
     }
 
     /**
      * Find the number of times this code has been used
      *
-     * @return int 
+     * @return int
      */
     public function getUses()
     {
