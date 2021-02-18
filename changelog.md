@@ -20,3 +20,7 @@
 * Add ability to limit uses on codes
 * Improve display of discounts in admin
 * Commenting/Documentation improvements
+
+## 2.0.1
+
+* Fix issues with Free Postage not being applied correctly
