@@ -5,7 +5,6 @@ namespace SilverCommerce\Discounts\Model;
 use SilverStripe\ORM\ArrayList;
 use SilverCommerce\Discounts\Model\Discount;
 use SilverCommerce\OrdersAdmin\Model\Estimate;
-use SilverCommerce\TaxAdmin\Helpers\MathsHelper;
 
 class FreePostageDiscount extends Discount
 {
@@ -17,37 +16,34 @@ class FreePostageDiscount extends Discount
     {
         $cats = $this->Categories();
         $all_products = ArrayList::create();
-        $value = $estimate->getPostage()->getPrice();
+        $postage_value = $estimate->getPostage()->getPrice();
+        $value = (float) $estimate->getSubTotal();
         $min = (float) $this->MinOrder;
 
-        if ($cats->count() > 0) {
-            foreach ($cats as $cat) {
-                $all_products->merge($cat->Products());
-            }
-
-            foreach ($estimate->Items() as $line_item) {
-                $match = $line_item->FindStockItem();
-                if (!empty($match) && !$all_products->find('ID', $match->ID)) {
-                    $value = 0;
-                }
-            }
-        }
-
-        $converted_value = (int) ($value * 100);
-
-        $converted_amount = $converted_value;
-
-        $amount = MathsHelper::round($converted_amount, 0)/100;
-
-        if ($amount > $value) {
-            $amount = $value;
-        }
-        
+        // If total value less than minimum, discount doesn't apply
         if ($value < $min) {
-            $amount = 0;
+            return 0;
+        } 
+
+        // If not limiting by category, return the postage value
+        if (!$cats->exists()) {
+            return $postage_value;
         }
 
-        return $amount;
+        // Finally, ensure all items in the cart are in allowed
+        // categories
+        foreach ($cats as $cat) {
+            $all_products->merge($cat->AllProducts());
+        }
+
+        foreach ($estimate->Items() as $line_item) {
+            $stock_item = $line_item->FindStockItem();
+            if (!empty($stock_item) && !$all_products->find('ID', $stock_item->ID)) {
+                $postage_value = 0;
+            }
+        }
+
+        return $postage_value;
     }
 
     public function appliedAmount(AppliedDiscount $item)
