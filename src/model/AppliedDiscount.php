@@ -78,7 +78,6 @@ class AppliedDiscount extends DataObject
     public function getCMSFields()
     {
         $self = $this;
-        $codes = DiscountCode::getValidCodes();
 
         $this->beforeUpdateCMSFields(function ($fields) use ($self) {
             if (!$self->isInDB()) {
@@ -86,7 +85,7 @@ class AppliedDiscount extends DataObject
                 $fields->replaceField(
                     'Code',
                     DropdownField::create('Code', $this->fieldLabel('Code'))
-                        ->setSource($codes->map('Code', 'Title'))
+                        ->setSource($codes->map('Code', 'TitleAndCode'))
                         ->setEmptyString(_t(__CLASS__ . ".SelectExistingDiscount", "Select an existing Discount"))
                 );
             }

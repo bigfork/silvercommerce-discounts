@@ -10,6 +10,7 @@ use SilverCommerce\Discounts\DiscountFactory;
 use SilverCommerce\OrdersAdmin\Model\Estimate;
 use SilverCommerce\Discounts\Model\AppliedDiscount;
 use SilverCommerce\Discounts\Model\PercentageDiscount;
+use SilverStripe\ORM\ArrayList;
 
 class DiscountFactoryTest extends SapphireTest
 {
@@ -62,6 +63,24 @@ class DiscountFactoryTest extends SapphireTest
 
         $this->assertEquals(1, $results->count());
         $this->assertTrue($results instanceof DataList);
+
+        DBDatetime::clear_mock_now();
+    }
+
+    public function testGetValidCodes()
+    {
+        DBDatetime::set_mock_now('2018-05-17 00:00:00');
+        $results = DiscountFactory::getValidCodes();
+
+        $this->assertEquals(6, $results->count());
+        $this->assertTrue(null !== $results->find('Code', '10percent'));
+        $this->assertTrue($results instanceof ArrayList);
+
+        DBDatetime::set_mock_now('2018-01-15 00:00:00');
+        $results = DiscountFactory::getValidCodes();
+
+        $this->assertEquals(0, $results->count());
+        $this->assertTrue($results instanceof ArrayList);
 
         DBDatetime::clear_mock_now();
     }

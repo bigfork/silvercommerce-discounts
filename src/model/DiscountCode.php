@@ -38,6 +38,7 @@ class DiscountCode extends DataObject
 
     private static $casting = [
         'Title' => 'Varchar',
+        'TitleAndCode' => 'Varchar',
         'Uses' => 'Int',
         'ReachedAllowed' => 'Boolean'
     ];
@@ -68,23 +69,30 @@ class DiscountCode extends DataObject
      */
     public static function getValidCodes()
     {
-        $discounts = DiscountFactory::getValid();
-
-        if (!$discounts->exists()) {
-            return ArrayList::create();
-        }
-
-        // compile a list of valid codes
-        return self::get()
-            ->filter('ID', $discounts->column('ID'))
-            ->filterByCallback(function ($item, $list) {
-                return !($item->ReachedAllowed);
-            });
+        return DiscountFactory::getValidCodes();
     }
 
     public function getTitle()
     {
         return $this->Discount()->Title;
+    }
+
+    /**
+     * Return a string of this codes title, as well as its actual code
+     *
+     * @param string $delimiter string used to seperate parts 
+     * 
+     * @return string
+     */
+    public function getTitleAndCode($delimiter = ": ")
+    {
+        $parts = [
+            $this->Title,
+            $delimiter,
+            $this->Code
+        ];
+
+        return implode("", $parts);
     }
 
     /**

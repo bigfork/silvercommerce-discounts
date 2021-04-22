@@ -24,3 +24,8 @@
 ## 2.0.1
 
 * Fix issues with Free Postage not being applied correctly
+
+## 2.0.2
+
+* Fix error getting valid discount code
+* Add discount usage report

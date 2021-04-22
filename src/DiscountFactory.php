@@ -5,6 +5,7 @@ namespace SilverCommerce\Discounts;
 use DateTime;
 use LogicException;
 use SilverStripe\ORM\DB;
+use SilverStripe\ORM\ArrayList;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\SiteConfig\SiteConfig;
 use SilverStripe\Core\Config\Configurable;
@@ -14,6 +15,7 @@ use SilverCommerce\Discounts\Model\Discount;
 use SilverCommerce\OrdersAdmin\Model\Estimate;
 use SilverCommerce\Discounts\Model\DiscountCode;
 use SilverCommerce\Discounts\Model\AppliedDiscount;
+use SilverStripe\Dev\Debug;
 
 /**
  * Simple factroy to handle getting discounts (either by code or valid)
@@ -109,6 +111,30 @@ class DiscountFactory
         $where = self::getDateFilter();
 
         return $config->Discounts()->where($where);
+    }
+
+    /**
+     * Return a list of codes that are currently valid (currently active
+     * and not exceeded usage limit)
+     *
+     * @return ArrayList
+     */
+    public static function getValidCodes()
+    {
+        $discounts = DiscountFactory::getValid();
+
+        if (!$discounts->exists()) {
+            return ArrayList::create();
+        }
+
+        $ids = $discounts->column('ID');
+
+        // compile a list of valid codes
+        return DiscountCode::get()
+            ->filter('Discount.ID', $ids)
+            ->filterByCallback(function ($item, $list) {
+                return !($item->ReachedAllowed);
+            });
     }
 
     /**
