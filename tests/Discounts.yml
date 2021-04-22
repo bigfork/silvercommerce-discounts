@@ -28,7 +28,6 @@ SilverCommerce\Discounts\Model\FixedRateDiscount:
   invalid:
     Title: "Invalid Discount"
     Type: "Fixed"
-    Code: "invalid"
     Amount: 10
     MinOrder: 20
     Starts: "2018-01-01"

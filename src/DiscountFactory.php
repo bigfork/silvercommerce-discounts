@@ -240,6 +240,18 @@ class DiscountFactory
     }
 
     /**
+     * Find the number of times the selected code has been used
+     *
+     * @return int
+     */
+    public function getCodeUses()
+    {
+        return AppliedDiscount::get()
+            ->filter('Code', $this->Code)
+            ->count();
+    }
+
+    /**
      * Set discount code that we are working with
      *
      * @param string $code

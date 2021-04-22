@@ -102,7 +102,7 @@ class DiscountCode extends DataObject
      */
     public function getUses()
     {
-        return AppliedDiscount::get()->filter('Code', $this->Code)->count();
+        return DiscountFactory::create($this->Code)->getCodeUses();
     }
 
     /**
