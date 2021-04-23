@@ -29,3 +29,7 @@
 
 * Fix error getting valid discount code
 * Add discount usage report
+
+## 2.0.3
+
+* Error fix with discount code usage
