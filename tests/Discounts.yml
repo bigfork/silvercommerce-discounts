@@ -82,6 +82,11 @@ SilverCommerce\OrdersAdmin\Model\LineItem:
     Quantity: 2
     BasePrice: 5.99
     TaxRate: =>SilverCommerce\TaxAdmin\Model\TaxRate.vat
+  itemfour:
+    Title: "Item Four"
+    Quantity: 3
+    BasePrice: 6.00
+    TaxRate: =>SilverCommerce\TaxAdmin\Model\TaxRate.vat
 SilverCommerce\OrdersAdmin\Model\Estimate:
   estimateone:
     Ref: 1231
@@ -89,3 +94,11 @@ SilverCommerce\OrdersAdmin\Model\Estimate:
       - =>SilverCommerce\OrdersAdmin\Model\LineItem.itemone
       - =>SilverCommerce\OrdersAdmin\Model\LineItem.itemtwo
       - =>SilverCommerce\OrdersAdmin\Model\LineItem.itemthree
+  estimatetwo:
+    Ref: 1231
+    Items:
+      - =>SilverCommerce\OrdersAdmin\Model\LineItem.itemfour
+SilverCommerce\Discounts\Model\AppliedDiscount:
+  tenpercentmulti:
+    Code: 10percent
+    Estimate: SilverCommerce\OrdersAdmin\Model\Estimate.estimatetwo

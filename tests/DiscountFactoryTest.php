@@ -50,6 +50,15 @@ class DiscountFactoryTest extends SapphireTest
         DBDatetime::clear_mock_now();
     }
 
+    public function testGetCodeUses()
+    {
+        $factory = DiscountFactory::create('20pound');
+        $this->assertEquals(0, $factory->getCodeUses());
+
+        $factory = DiscountFactory::create('10percent');
+        $this->assertEquals(1, $factory->getCodeUses());
+    }
+
     public function testGetValid()
     {
         DBDatetime::set_mock_now('2018-05-17 00:00:00');

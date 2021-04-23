@@ -247,7 +247,7 @@ class DiscountFactory
     public function getCodeUses()
     {
         return AppliedDiscount::get()
-            ->filter('Code', $this->Code)
+            ->filter('Code', $this->getCode())
             ->count();
     }
 
