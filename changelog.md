@@ -33,3 +33,7 @@
 ## 2.0.3
 
 * Error fix with discount code usage
+
+## 2.0.4
+
+* Fix error when saving discount code on newer PHP versions
