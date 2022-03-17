@@ -5,6 +5,8 @@ namespace SilverCommerce\Discounts;
 use DateTime;
 use LogicException;
 use SilverStripe\ORM\DB;
+use SilverStripe\Dev\Debug;
+use SilverStripe\ORM\DataList;
 use SilverStripe\ORM\ArrayList;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\SiteConfig\SiteConfig;
@@ -15,7 +17,6 @@ use SilverCommerce\Discounts\Model\Discount;
 use SilverCommerce\OrdersAdmin\Model\Estimate;
 use SilverCommerce\Discounts\Model\DiscountCode;
 use SilverCommerce\Discounts\Model\AppliedDiscount;
-use SilverStripe\Dev\Debug;
 
 /**
  * Simple factroy to handle getting discounts (either by code or valid)
@@ -34,6 +35,16 @@ class DiscountFactory
      * @var int
      */
     private static $discount_limit = 1;
+
+    /**
+     * Allow discount factory to replace first discount with the
+     * new one.
+     * 
+     * If set to false, this factory throws an error.
+     *
+     * @var bool
+     */
+    private static $allow_replacement = true;
 
     /**
      * Discount code that we are working with
@@ -192,6 +203,7 @@ class DiscountFactory
     public function applyDiscountToEstimate(bool $only_valid = true)
     {
         $limit = Config::inst()->get(self::class, 'discount_limit');
+        $allow_replacement = Config::inst()->get(self::class, 'allow_replacement');
         $code = $this->getCode();
         $discount = $this->getDiscount($only_valid);
         $estimate = $this->getEstimate();
@@ -208,7 +220,10 @@ class DiscountFactory
             throw new LogicException(_t(__CLASS__ . '.DiscountAlreadySet', 'Cannot apply discount more than once'));
         }
 
-        if ($limit > 0 && $estimate->Discounts()->count() >= $limit) {
+        /** @var DataList */
+        $discounts = $estimate->Discounts();
+
+        if ($allow_replacement === false && $limit > 0 && $discounts->count() >= $limit) {
             throw new LogicException(_t(
                 __CLASS__ . '.DiscountLimitReached',
                 'Only {limit} discounts can be applied at this time',
@@ -220,8 +235,11 @@ class DiscountFactory
         $applied->Code = $code;
         $applied->Title = $discount->Title;
         $applied->Value = $discount->calculateAmount($estimate);
-        $applied->EstimateID = $estimate->ID;
         $applied->write();
+
+        if ($allow_replacement === true && $discounts->count() >= $limit) {
+            $discounts->first()->delete();
+        }
 
         $estimate->Discounts()->add($applied);
         $estimate->recalculateDiscounts();
