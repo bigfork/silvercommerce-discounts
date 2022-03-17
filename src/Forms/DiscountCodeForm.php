@@ -36,10 +36,10 @@ class DiscountCodeForm extends Form
         $fields = FieldList::create(
             TextField::create(
                 "DiscountCode",
-                _t("ShoppingCart.DiscountCode", "Discount Code")
+                _t("Discounts.HaveDiscountCode", "Do you have a Discount Code")
             )->setAttribute(
                 "placeholder",
-                _t("ShoppingCart.EnterDiscountCode", "Enter a discount code")
+                _t("Discounts.EnterDiscountCode", "Enter discount code here")
             )
         );
 
