@@ -37,3 +37,7 @@
 ## 2.0.4
 
 * Fix error when saving discount code on newer PHP versions
+
+## 2.0.5
+
+* Add overwrite to discount factory allowing discounts to be automatically replaced when a new one is added
