@@ -52,9 +52,9 @@ class AppliedDiscount extends DataObject
     public function updateDiscount($write = true)
     {
         $discount = $this->getDiscount();
-        if ($discount->exists()) {
-            $value = $discount->appliedAmount($this);
 
+        if (!empty($discount) && $discount->exists()) {
+            $value = $discount->appliedAmount($this);
             $this->Value = $value;
 
             if ($write) {
@@ -105,8 +105,11 @@ class AppliedDiscount extends DataObject
 
         if (empty($this->Title) || empty($this->Value)) {
             $discount = $this->getDiscount();
-            $this->Title = $discount->Title;
-            $this->updateDiscount(false);
+
+            if (!empty($discount) && $discount->exists()) {
+                $this->Title = $discount->Title;
+                $this->updateDiscount(false);
+            }
         }
     }
 }

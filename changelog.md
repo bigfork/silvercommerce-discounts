@@ -41,3 +41,7 @@
 ## 2.0.5
 
 * Add overwrite to discount factory allowing discounts to be automatically replaced when a new one is added
+
+## 2.0.6
+
+* Ensure discount is available when called from `AppliedDiscount`
