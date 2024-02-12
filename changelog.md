@@ -45,3 +45,7 @@
 ## 2.0.6
 
 * Ensure discount is available when called from `AppliedDiscount`
+
+## 2.0.7
+
+* Ensure discounts clean up on deletion

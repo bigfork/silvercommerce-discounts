@@ -67,6 +67,10 @@ class Discount extends DataObject implements PermissionProvider
         'CodesList'
     ];
 
+    private static $cascade_deletes = [
+        'Codes'
+    ];
+
     private static $summary_fields = [
         'I18nType',
         "Title",
