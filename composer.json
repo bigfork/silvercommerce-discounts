@@ -26,16 +26,21 @@
           "issues": "http://github.com/silvercommerce/discounts/issues"
       },
       "require": {
-          "silverstripe/framework": "~4.0",
-          "silvercommerce/settings": "~1.0",
-          "silvercommerce/orders-admin": "~1.0",
-          "symbiote/silverstripe-gridfieldextensions": "^3.2"
+          "silverstripe/framework": "^5",
+          "silvercommerce/settings": "dev-ss5",
+          "silvercommerce/orders-admin": "dev-ss5",
+          "symbiote/silverstripe-gridfieldextensions": "^4"
       },
-      "require-dev": {
-          "silvercommerce/catalogue-admin": "^1.0",
-          "phpunit/phpunit": "^5.7",
-          "squizlabs/php_codesniffer": "^3.0"
-      },
+      "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/bigfork/silvercommerce-orders-admin"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/bigfork/silvercommerce-settings"
+        }
+    ],
       "autoload": {
           "psr-4": {
               "SilverCommerce\\Discounts\\": "src/",
